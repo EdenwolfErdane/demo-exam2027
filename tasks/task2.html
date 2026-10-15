@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задание 2. Разработка алгоритма и создание приложения — Разбор ДЭ 2027</title><link rel="stylesheet" href="../style.css"></head><body>
+<header class="top"><a href="../index.html" class="nav-back">← К выбору задания</a>
+<div class="brand"><h1>Задание 2. Разработка алгоритма и создание приложения</h1><div class="sub">Разбор примерного задания ДЭ 2027 · C# WinForms · 10 баллов · для новичков</div></div>
+<button class="theme-toggle" id="themeToggle" title="Переключить тему"><span class="theme-icon">🌙</span><span class="theme-label">Тёмная</span></button></header>
+<div class="layout"><nav class="side"><h3>Содержание</h3><a href="#intro">0. Что мы делаем и зачем</a><a href="#terms">1. Простые слова</a><a href="#tz">2. Что требует задание</a><a href="#vs">3. Создание проекта</a><a href="#res">4. Ресурсы</a><a href="#gstyle">5. Стиль формы мышкой (без кода)</a><a href="#gdb">6. Подключение БД мышкой (мастер)</a><a href="#files">7. Служебные файлы с кодом</a><a href="#forms">8. Окно каталога и карточка — мышкой</a><a href="#logic">9. Код каталога</a><a href="#disc">10. Скидка — как она считается</a><a href="#run">11. Запуск и проверка</a><a href="#check">12. Чек-лист</a></nav><main><section id="intro"><h2>0. Что мы делаем и зачем</h2><p>В задании 2 вы пишете <b>первое окно программы</b> — каталог обуви. Оно берёт данные из базы (задание 1), считает цену со скидкой и рисует карточки. Вход и заказы — задания 3 и 4.</p><p>Результат (красная карточка — товара ≤ 3 пар; «заглушка» — когда фото нет):</p><div style="display:flex;gap:12px;align-items:center;border:1px solid #999;padding:8px;max-width:520px;background:#fff;color:#000;font-family:Calibri,sans-serif"><img src="../img/p1.png" style="width:80px;height:80px;object-fit:contain"><div style="flex:1;font-size:13px"><b>Малыш-Спорт | Кроссовки «Звёздочка»</b><br>Категория: Детская обувь<br>Состав: экокожа, хлопок<br>Остаток: <b>много</b></div><b>1 643 ₽ <s style="font-weight:400">2 190</s></b></div><div style="height:6px"></div><div style="display:flex;gap:12px;align-items:center;border:1px solid #999;padding:8px;max-width:520px;background:#ff8080;color:#000;font-family:Calibri,sans-serif"><img src="../img/picture.png" style="width:80px;height:80px;object-fit:contain"><div style="flex:1;font-size:13px"><b>Малыш-Спорт | Кроссовки «Звёздочка»</b><br>Категория: Детская обувь<br>Состав: экокожа, хлопок<br>Остаток: <b>мало</b></div><b>3 000 ₽</b></div><div class="block action">Плашки: синяя — что нажать, зелёная — что вписать, жёлтая — осторожно.</div><div class="block warn"><b>Про скриншоты:</b> окна Visual Studio я снять не могу, поэтому «куда нажать» описано точными названиями меню и кнопок. Свои скриншоты можно положить в папку <code>img</code>.</div></section><section id="terms"><h2>1. Простые слова</h2><table><tr><th>Слово</th><th>По-человечески</th></tr><tr><td>Solution / Project</td><td>«Папка» всей программы / одна программа внутри</td></tr><tr><td>Форма (Form)</td><td>Окно программы</td></tr><tr><td>Control</td><td>Кнопка, надпись, картинка, поле на форме</td></tr><tr><td>Класс</td><td>Файл с кодом, описывающий «вещь» (товар, подключение)</td></tr><tr><td>Свойство</td><td>Настройка элемента (<code>Text</code>, <code>BackColor</code>)</td></tr><tr><td>Строка подключения</td><td>Адрес БД: на каком сервере и как называется</td></tr></table></section><section id="tz"><h2>2. Что требует задание</h2><ul><li>В названии приложения — «Чудо Обувь».</li><li>Calibri; фон #FFFFFF; доп. фон #D2F6E7; акцент #70B2AF; логотип; иконка; заголовок окна.</li><li>Карточка: картинка, категория, наименование, производство, состав, цена со скидкой, «много/мало».</li><li>Нет фото — <code>picture.png</code>. Остаток ≤ 3 — фон #ff8080.</li><li>Скидка 25%, если заказов в прошлом месяце не было.</li><li>CamelCase, одна команда в строке, без аварийных завершений.</li></ul></section><section id="vs"><h2>3. Создание проекта</h2><div class="step"><span class="num">1</span><h4>Запуск</h4><div class="block action">Пуск → <b>Visual Studio</b> → <b>Create a new project</b>.</div></div><div class="step"><span class="num">2</span><h4>Тип проекта</h4><div class="block action">В поиске введите <code>Windows Forms</code> → <b>Windows Forms App (.NET Framework)</b>, язык C# → <b>Next</b>.</div><div class="block warn">Нужен именно <b>.NET Framework</b>, не просто «.NET».</div></div><div class="step"><span class="num">3</span><h4>Имя</h4><div class="block field">Project name: <code>ChudoObuvOrders</code></div><div class="block action">Framework: <b>.NET Framework 4.8</b> → <b>Create</b>.</div></div><div class="step"><span class="num">4</span><h4>Панели</h4><p>Пустое окно <b>Form1</b> — ваша форма. Справа <b>Solution Explorer</b> (файлы). Нет панелей? <b>View → Solution Explorer</b>, <b>View → Toolbox</b>, свойства — <b>F4</b>.</p></div><div class="step"><span class="num">5</span><h4>Библиотека для App.config</h4><div class="block action">Solution Explorer → правой кнопкой по <b>References</b> → <b>Add Reference…</b> → <b>Assemblies → Framework</b> → галочка <b>System.Configuration</b> → <b>OK</b>.</div></div></section><section id="res"><h2>4. Ресурсы</h2><div class="step"><span class="num">1</span><h4>Папки</h4><div class="block action">Правой по проекту → <b>Add → New Folder</b> → <code>Resources</code>; внутри ещё <code>Images</code>.</div></div><div class="step"><span class="num">2</span><h4>Файлы</h4><div class="block action">Правой по <b>Resources</b> → <b>Add → Existing Item…</b> → <code>Чудо Обувь.ico</code>, <code>Чудо Обувь.png</code>, <code>picture.png</code>. В <b>Images</b> — все картинки товаров.</div></div><figure style="margin:12px 0"><img src="../img/logo.png" style="max-height:150px;border:1px solid var(--border);border-radius:6px"><figcaption style="color:var(--muted);font-size:13px">Логотип: не растягивать, не перекрашивать</figcaption></figure><figure style="margin:12px 0"><img src="../img/picture.png" style="max-height:150px;border:1px solid var(--border);border-radius:6px"><figcaption style="color:var(--muted);font-size:13px">Заглушка picture.png</figcaption></figure><div class="step"><span class="num">3</span><h4>Copy if newer</h4><div class="block action">Выделите <b>все</b> файлы (Shift+клик) → F4 → <b>Copy to Output Directory</b> = <b>Copy if newer</b>.</div><div class="block warn">Без этого программа упадёт: «файл не найден».</div></div><div class="step"><span class="num">4</span><h4>Иконка программы</h4><div class="block action">Правой по проекту → <b>Properties</b> → <b>Application</b> → <b>Icon</b> → <code>Чудо Обувь.ico</code>.</div></div></section><section id="gstyle"><h2>5. Стиль формы мышкой (без кода)</h2><p>Всё, что нужно по стилю, настраивается в окне <b>Properties</b> (F4). Жёлтым в макете отмечены строки, которые вы меняете.</p><div style="border:1px solid #888;max-width:420px;margin:10px 0;background:#f0f0f0;color:#000;font:13px Segoe UI,Calibri,sans-serif"><div style="background:#2d6cdf;color:#fff;padding:4px 8px"><b>Properties — MainForm</b></div><div style="padding:8px"><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">BackColor</div><div style="flex:1;padding:2px 6px">255, 255, 255 ▾</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Font</div><div style="flex:1;padding:2px 6px">Calibri, 10pt …</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Icon</div><div style="flex:1;padding:2px 6px">(Icon) …</div></div><div style="display:flex;border-bottom:1px solid #ddd;"><div style="width:42%;padding:2px 6px;color:#444">StartPosition</div><div style="flex:1;padding:2px 6px">CenterScreen</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Text</div><div style="flex:1;padding:2px 6px">Чудо Обувь — Каталог обуви</div></div></div></div><div class="step"><span class="num">1</span><h4>Цвет фона</h4><div class="block action">Кликните по пустому месту формы → F4 → строка <b>BackColor</b> → кликните по значению → стрелка ▾ → вкладка <b>Custom</b>/<b>Web</b>. Проще всего <b>вписать значение</b> в поле: <code>255, 255, 255</code> → Enter.</div><div class="block tip">Для #D2F6E7 вписывайте <code>210, 246, 231</code>, для #70B2AF — <code>112, 178, 175</code>, для #FF8080 — <code>255, 128, 128</code>. Это те же цвета, только в десятичной записи.</div></div><div class="step"><span class="num">2</span><h4>Шрифт</h4><div class="block action">Строка <b>Font</b> → кнопка <b>…</b> справа → в окне выберите шрифт <b>Calibri</b>, размер <b>10</b> → <b>OK</b>.</div><div class="block ok">Шрифт формы автоматически наследуют все элементы на ней, поэтому достаточно задать его <b>один раз на форме</b>.</div></div><div class="step"><span class="num">3</span><h4>Заголовок окна</h4><div class="block action">Строка <b>Text</b> → впишите <code>Чудо Обувь — Каталог обуви</code>.</div></div><div class="step"><span class="num">4</span><h4>Иконка окна</h4><div class="block action">Строка <b>Icon</b> → кнопка <b>…</b> → выберите <code>Чудо Обувь.ico</code> → <b>Открыть</b>.</div></div><div class="step"><span class="num">5</span><h4>Логотип</h4><div class="block action">Toolbox → <b>PictureBox</b> на форму. В Properties: <b>Image</b> → <b>…</b> → <b>Local resource</b> → <b>Import…</b> → файл <code>Чудо Обувь.png</code> → <b>OK</b>. Затем <b>SizeMode</b> = <b>Zoom</b>.</div><div class="block ok">Так картинка «вшивается» в программу — для неё <b>не нужен</b> Copy if newer. Для фото товаров, которые выбираются по имени из БД, он по-прежнему нужен.</div></div><div class="step"><span class="num">6</span><h4>Размещение</h4><div class="block action">Для панели каталога: <b>Dock</b> → кликните по стрелке → нажмите центральный квадрат (Fill). Для кнопок в углу: <b>Anchor</b> → оставьте верхнюю и правую «ножки».</div></div><div class="step"><span class="num">7</span><h4>Повторить на других формах</h4><div class="block tip">Задали стиль на главной форме — на каждой следующей форме выставьте те же <b>BackColor, Font, Icon</b>. Быстрый способ: на новой форме просто повторите шаги 1–4 (это 4 строки).</div></div><div class="block warn">Цвет фона «мало на складе» (#FF8080) мышкой задать нельзя: он зависит от данных. Для него остаётся одна строка в коде карточки.</div></section><section id="gdb"><h2>6. Подключение БД мышкой (мастер)</h2><p>Visual Studio умеет сама создать строку подключения и записать её в <code>App.config</code>. Руками ничего вписывать не надо.</p><div class="step"><span class="num">1</span><h4>Узнать имя сервера</h4><div class="block action">Откройте SSMS: в окне <b>Connect to Server</b> поле <b>Server name</b> — это и есть ваш сервер (например <code>ПК\SQLEXPRESS</code>). Запомните его.</div></div><div class="step"><span class="num">2</span><h4>Открыть мастер</h4><div class="block action">В Visual Studio: меню <b>View → Other Windows → Data Sources</b> (или Shift+Alt+D) → <b>Add New Data Source…</b> → <b>Database</b> → <b>Next</b> → <b>Dataset</b> → <b>Next</b> → <b>New Connection…</b></div></div><div class="step"><span class="num">3</span><h4>Окно подключения</h4><div style="border:1px solid #888;max-width:420px;margin:10px 0;background:#f0f0f0;color:#000;font:13px Segoe UI,Calibri,sans-serif"><div style="background:#2d6cdf;color:#fff;padding:4px 8px"><b>Add Connection</b></div><div style="padding:8px"><div style="display:flex;border-bottom:1px solid #ddd;"><div style="width:42%;padding:2px 6px;color:#444">Data source:</div><div style="flex:1;padding:2px 6px">Microsoft SQL Server (SqlClient)</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Server name:</div><div style="flex:1;padding:2px 6px">ИМЯ_СЕРВЕРА\SQLEXPRESS ▾  [Refresh]</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Log on:</div><div style="flex:1;padding:2px 6px">● Use Windows Authentication</div></div><div style="display:flex;border-bottom:1px solid #ddd;background:#ffe9a8;"><div style="width:42%;padding:2px 6px;color:#444">Select database:</div><div style="flex:1;padding:2px 6px">Чудо_Обувь ▾</div></div><div style="padding:8px">[Test Connection] [OK] [Cancel]</div></div></div><div class="block action">Нажмите <b>Refresh</b> и выберите сервер из списка → <b>Windows Authentication</b> → из списка <b>Select database</b> выберите <code>Чудо_Обувь</code> → <b>Test Connection</b> (должно появиться «Test connection succeeded») → <b>OK</b>.</div></div><div class="step"><span class="num">4</span><h4>Сохранить в App.config</h4><div class="block action"><b>Next</b> → галочка <b>Yes, save the connection as</b> → оставьте имя по умолчанию (<code>ChudoObuvOrders.Properties.Settings.ConnectionString</code>) → <b>Next</b>.</div><div class="block ok">Именно такое имя читает программа из архива — менять его не нужно.</div></div><div class="step"><span class="num">5</span><h4>Выбрать таблицы</h4><div class="block action">Раскройте <b>Tables</b> → отметьте все таблицы → <b>Finish</b>. В Solution Explorer появится файл <b>.xsd</b> — это нормально.</div></div><div class="step"><span class="num">6</span><h4>Проверка</h4><div class="block action">Откройте <b>App.config</b> — внутри должен появиться блок <code>connectionStrings</code>. Если нет — вернитесь к шагу 2.</div><div class="block warn">Ошибка «A network-related…» — неверно выбран сервер: он должен совпадать с SSMS. «Cannot open database» — не выбрана база или она ещё не создана (задание 1).</div></div><div class="block tip">Быстрая проверка таблицы без кода: перетащите из окна Data Sources таблицу на форму — появится готовая таблица с данными. Запустите F5: если данные видны, подключение работает. Потом этот элемент можно удалить.</div></section><section id="files"><h2>7. Служебные файлы с кодом</h2><p>Эти файлы без внешнего вида — только логика. Каждый создаётся одинаково:</p><div class="block action">Правой по проекту → <b>Add → Class…</b> → имя (<code>Db.cs</code>) → <b>Add</b> → <b>Ctrl+A</b> в открывшемся файле → вставьте код. <code>Program.cs</code> уже есть — замените в нём всё.</div><h3><code>Db.cs</code> — работа с базой данных</h3><pre><code>using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+
+// Всё общение с базой данных — в этом классе.
+public static class Db
+{
+    // Строку подключения создаёт мастер Visual Studio (раздел 6а) в App.config.
+    static string cs = ConfigurationManager
+        .ConnectionStrings[&quot;ChudoObuvOrders.Properties.Settings.ConnectionString&quot;].ConnectionString;
+
+    // Команда с параметрами: пары &quot;имя&quot;, значение, &quot;имя&quot;, значение...
+    public static SqlCommand Cmd(SqlConnection c, string sql, object[] p, SqlTransaction t = null)
+    {
+        var m = new SqlCommand(sql, c, t);
+        for (int i = 0; i &lt; p.Length; i += 2)
+            m.Parameters.AddWithValue((string)p[i], p[i + 1]);
+        return m;
+    }
+
+    // SELECT: вернуть таблицу.
+    public static DataTable Table(string sql, params object[] p)
+    {
+        using (var c = new SqlConnection(cs))
+        {
+            var t = new DataTable();
+            new SqlDataAdapter(Cmd(c, sql, p)).Fill(t);
+            return t;
+        }
+    }
+
+    // INSERT / UPDATE / DELETE.
+    public static void Run(string sql, params object[] p)
+    {
+        using (var c = new SqlConnection(cs))
+        {
+            c.Open();
+            Cmd(c, sql, p).ExecuteNonQuery();
+        }
+    }
+
+    // Открытое подключение — для транзакций.
+    public static SqlConnection Open()
+    {
+        var c = new SqlConnection(cs);
+        c.Open();
+        return c;
+    }
+}
+</code></pre><h3><code>Session.cs</code> — кто вошёл и корзина</h3><pre><code>using System.ComponentModel;
+
+// Одна строка корзины.
+public class CartLine
+{
+    public int StockItemId { get; set; }
+    public string Name { get; set; }
+    public decimal Size { get; set; }
+    public int Qty { get; set; }
+    public decimal Price { get; set; }
+}
+
+// Кто сейчас вошёл и что лежит в корзине.
+public static class Session
+{
+    public static int UserId;
+    public static string FullName = &quot;&quot;;
+    public static string Role = &quot;&quot;;
+    public static bool LoggedOut;
+    public static BindingList&lt;CartLine&gt; Cart = new BindingList&lt;CartLine&gt;();
+
+    public static bool IsAuth { get { return UserId &gt; 0; } }
+    public static bool IsAdmin { get { return Role.StartsWith(&quot;Админ&quot;); } }
+    public static bool IsStaff { get { return IsAdmin || Role.StartsWith(&quot;Менед&quot;); } }
+
+    public static void Clear()
+    {
+        UserId = 0; FullName = &quot;&quot;; Role = &quot;&quot;;
+        Cart.Clear();
+    }
+}
+</code></pre><h3><code>Program.cs</code> — запуск: вход → каталог</h3><pre><code>using System;
+using System.Windows.Forms;
+
+static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        while (true)
+        {
+            // 1) окно входа; закрыли крестиком — выходим
+            using (var login = new LoginForm())
+                if (login.ShowDialog() != DialogResult.OK) break;
+            // 2) главное окно; если нажали «Выйти» — снова вход
+            Session.LoggedOut = false;
+            using (var main = new MainForm())
+                main.ShowDialog();
+            if (!Session.LoggedOut) break;
+        }
+    }
+}
+</code></pre><div class="block warn">Файл <code>Form1.cs</code>, созданный студией, удалите: Solution Explorer → правой по нему → <b>Delete</b>.</div></section><section id="forms"><h2>8. Окно каталога и карточка — мышкой</h2><p>Сначала создайте карточку (<code>ProductCard</code>), потом окно (<code>MainForm</code>) — тогда карточка появится в Toolbox.</p><h3>Карточка товара (User Control) <code>ProductCard</code></h3><div class="block action">Правой по проекту → <b>Add → User Control (Windows Forms)</b> → имя <code>ProductCard</code> → <b>Add</b>. Щёлкните по пустому месту контрола → <b>F4</b>:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>ClientSize</td><td>880, 90</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>Panel</td><td><code>pnlRoot</code></td><td><b>Dock</b> = Fill · <b>BorderStyle</b> = FixedSingle · <b>Cursor</b> = Hand · <b>BackColor</b> = 255, 255, 255</td></tr><tr><td>2</td><td>PictureBox</td><td><code>picImage</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 5, 5 · <b>Size</b> = 80, 78 · <b>SizeMode</b> = Zoom</td></tr><tr><td>3</td><td>Label</td><td><code>lblInfo</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 95, 8 · <b>Size</b> = 660, 75</td></tr><tr><td>4</td><td>Label</td><td><code>lblPrice</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 760, 8 · <b>Size</b> = 110, 75</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>pnlRoot</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>picImage</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>lblInfo</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>lblPrice</code></td><td>Click</td><td><code>Card_Click</code></td></tr></table><div class="block tip">У четырёх элементов один метод <code>Card_Click</code>: создайте его у первого, а у остальных в списке справа от события <b>Click</b> выберите уже готовый <code>Card_Click</code>.</div><h3>Главное окно — каталог <code>MainForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>MainForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Каталог</td></tr><tr><td>ClientSize</td><td>944, 611</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>TextBox</td><td><code>txtSearch</code></td><td><b>Location</b> = 10, 10 · <b>Size</b> = 160, 23</td></tr><tr><td>2</td><td>ComboBox</td><td><code>cmbSort</code></td><td><b>Location</b> = 180, 10 · <b>Size</b> = 130, 23 · <b>DropDownStyle</b> = DropDownList · <b>Items</b> = кнопка … → строки: Без сортировки; Цена ↑; Цена ↓</td></tr><tr><td>3</td><td>ComboBox</td><td><code>cmbCat</code></td><td><b>Location</b> = 320, 10 · <b>Size</b> = 150, 23 · <b>DropDownStyle</b> = DropDownList</td></tr><tr><td>4</td><td>Button</td><td><code>btnCart</code></td><td><b>Text</b> = Корзина (0) · <b>Location</b> = 480, 8 · <b>Size</b> = 90, 28</td></tr><tr><td>5</td><td>Button</td><td><code>btnOrders</code></td><td><b>Text</b> = Заказы · <b>Location</b> = 575, 8 · <b>Size</b> = 80, 28</td></tr><tr><td>6</td><td>Button</td><td><code>btnExit</code></td><td><b>Text</b> = Выйти · <b>Location</b> = 660, 8 · <b>Size</b> = 70, 28</td></tr><tr><td>7</td><td>Label</td><td><code>lblUser</code></td><td><b>Text</b> = Гость · <b>AutoSize</b> = True · <b>Location</b> = 740, 13</td></tr><tr><td>8</td><td>FlowLayoutPanel</td><td><code>pnlCatalog</code></td><td><b>Location</b> = 0, 45 · <b>Size</b> = 944, 566 · <b>AutoScroll</b> = True · <b>BackColor</b> = 210, 246, 231 · <b>Anchor</b> = Top, Bottom, Left, Right</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>txtSearch</code></td><td>TextChanged</td><td><code>txtSearch_TextChanged</code></td></tr><tr><td><code>cmbSort</code></td><td>SelectedIndexChanged</td><td><code>cmbSort_SelectedIndexChanged</code></td></tr><tr><td><code>cmbCat</code></td><td>SelectedIndexChanged</td><td><code>cmbCat_SelectedIndexChanged</code></td></tr><tr><td><code>btnCart</code></td><td>Click</td><td><code>btnCart_Click</code></td></tr><tr><td><code>btnOrders</code></td><td>Click</td><td><code>btnOrders_Click</code></td></tr><tr><td><code>btnExit</code></td><td>Click</td><td><code>btnExit_Click</code></td></tr></table><div class="block warn">Карточки <code>ProductCard</code> появятся на панели только после того, как вы создадите контрол (раздел «Карточка») и соберёте проект: <b>Build → Build Solution</b>.</div></section><section id="logic"><h2>9. Код каталога</h2><p>Откройте файл (правой по форме → <b>View Code</b> или <b>F7</b>), <b>Ctrl+A</b>, вставьте. Внешний вид в этих файлах не задаётся — он настроен мышкой.</p><h3><code>ProductCard.cs</code></h3><pre><code>using System;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+// Карточка товара в каталоге (User Control). Вид — в Designer, здесь — заполнение данными.
+public partial class ProductCard : UserControl
+{
+    public event Action&lt;DataRow&gt; Clicked;
+    DataRow row;
+
+    public ProductCard() { InitializeComponent(); }
+
+    public void Bind(DataRow r)
+    {
+        row = r;
+        int qty = (int)r[&quot;Qty&quot;];
+        // Мало на складе (3 и меньше) — красный фон.
+        pnlRoot.BackColor = qty &lt;= 3 ? Color.FromArgb(255, 128, 128) : Color.White;
+        lblInfo.Text = r[&quot;Manufacturer&quot;] + &quot; | &quot; + r[&quot;ProductName&quot;] + &quot;\n&quot; + r[&quot;CategoryName&quot;] + &quot;\nСостав: &quot; + r[&quot;Composition&quot;];
+        lblPrice.Text = ((decimal)r[&quot;Price&quot;]).ToString(&quot;N0&quot;) + &quot; ₽\n&quot; + (qty &gt; 5 ? &quot;много&quot; : &quot;мало&quot;);
+        picImage.Image = LoadImage(r[&quot;ImageFileName&quot;] as string);
+    }
+
+    // Нет картинки (пусто или файла нет) — берём заглушку picture.png.
+    public static Image LoadImage(string fileName)
+    {
+        string path = Path.Combine(Application.StartupPath, &quot;Resources&quot;, &quot;Images&quot;, fileName ?? &quot;&quot;);
+        if (!File.Exists(path)) path = Path.Combine(Application.StartupPath, &quot;Resources&quot;, &quot;picture.png&quot;);
+        return Image.FromFile(path);
+    }
+
+    // Один обработчик Click на панель, картинку и обе надписи.
+    private void Card_Click(object sender, EventArgs e)
+    {
+        if (Clicked != null) Clicked(row);
+    }
+}
+</code></pre><h3><code>MainForm.cs</code></h3><pre><code>using System;
+using System.Data;
+using System.Windows.Forms;
+
+// Каталог: поиск, фильтр, сортировка, карточки. Вид окна — в MainForm.Designer.cs.
+public partial class MainForm : Form
+{
+    bool ready = false;   // пока окно строится, каталог не перечитываем
+    bool pick;            // true — каталог открыт из «Заказов» для добавления заказа
+
+    public MainForm(bool pick = false)
+    {
+        InitializeComponent();
+        this.pick = pick;
+        cmbCat.DisplayMember = &quot;CategoryName&quot;;
+        cmbCat.ValueMember = &quot;CategoryId&quot;;
+        cmbCat.DataSource = Db.Table(&quot;SELECT 0 AS CategoryId, N&#x27;Все категории&#x27; AS CategoryName UNION ALL SELECT Код_категории, Название_категории FROM Категории&quot;);
+        cmbSort.SelectedIndex = 0;
+        // Права: гость не ищет и не фильтрует; «Заказы» — менеджер/админ.
+        txtSearch.Visible = cmbSort.Visible = cmbCat.Visible = btnCart.Visible = Session.IsAuth;
+        btnOrders.Visible = Session.IsStaff;
+        lblUser.Text = Session.IsAuth ? Session.FullName : &quot;Гость&quot;;
+        if (pick) { btnOrders.Visible = false; btnExit.Text = &quot;Назад&quot;; }
+        ready = true;
+        LoadCatalog();
+    }
+
+    // Поиск, сортировка, фильтр — любое изменение перерисовывает каталог.
+    private void txtSearch_TextChanged(object sender, EventArgs e) { LoadCatalog(); }
+    private void cmbSort_SelectedIndexChanged(object sender, EventArgs e) { LoadCatalog(); }
+    private void cmbCat_SelectedIndexChanged(object sender, EventArgs e) { LoadCatalog(); }
+
+    private void btnCart_Click(object sender, EventArgs e) { new CartForm().ShowDialog(); LoadCatalog(); }
+    private void btnOrders_Click(object sender, EventArgs e) { new OrdersForm().ShowDialog(); LoadCatalog(); }
+    private void btnExit_Click(object sender, EventArgs e)
+    {
+        if (!pick)   // «Выйти» — на экран входа; «Назад» просто закрывает окно
+        {
+            Session.Clear();
+            Session.LoggedOut = true;
+        }
+        Close();
+    }
+
+    void LoadCatalog()
+    {
+        if (!ready) return;
+        // Прошлый месяц: с 1-го числа прошлого месяца до 1-го числа этого (не включая).
+        var thisMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        string order = cmbSort.SelectedIndex == 1 ? &quot;ORDER BY Price ASC&quot;
+                     : cmbSort.SelectedIndex == 2 ? &quot;ORDER BY Price DESC&quot; : &quot;ORDER BY p.Код_товара&quot;;
+        // Цена: заказывали в прошлом месяце — базовая, иначе минус 25%.
+        var t = Db.Table(@&quot;SELECT p.Код_товара AS ProductId, p.Наименование AS ProductName, p.Производство AS Manufacturer, p.Состав AS Composition,
+              p.Описание AS Description, p.Изображение AS ImageFileName, c.Название_категории AS CategoryName,
+              ISNULL((SELECT SUM(Количество) FROM Товарные_позиции WHERE Код_товара = p.Код_товара), 0) AS Qty,
+              CASE WHEN EXISTS (SELECT 1 FROM Строки_заказов oi
+                                JOIN Заказы o ON o.Код_заказа = oi.Код_заказа
+                                JOIN Товарные_позиции si ON si.Код_позиции = oi.Код_позиции
+                                WHERE si.Код_товара = p.Код_товара AND o.Дата_заказа &gt;= @a AND o.Дата_заказа &lt; @b)
+                   THEN p.Цена ELSE ROUND(p.Цена * 0.75, 2) END AS Price
+              FROM Товары p JOIN Категории c ON c.Код_категории = p.Код_категории
+              WHERE (p.Наименование LIKE @s OR p.Описание LIKE @s)
+                AND (@cat = 0 OR p.Код_категории = @cat) &quot; + order,
+            &quot;@a&quot;, thisMonth.AddMonths(-1), &quot;@b&quot;, thisMonth,
+            &quot;@s&quot;, &quot;%&quot; + txtSearch.Text + &quot;%&quot;, &quot;@cat&quot;, Session.IsAuth ? (int)cmbCat.SelectedValue : 0);
+
+        pnlCatalog.Controls.Clear();
+        foreach (DataRow r in t.Rows)
+        {
+            var card = new ProductCard();
+            card.Bind(r);
+            card.Clicked += OpenProduct;
+            pnlCatalog.Controls.Add(card);
+        }
+        btnCart.Text = &quot;Корзина (&quot; + Session.Cart.Count + &quot;)&quot;;
+    }
+
+    void OpenProduct(DataRow r)
+    {
+        new ProductForm(r).ShowDialog();
+        LoadCatalog();
+    }
+}
+</code></pre><div class="block warn">Красные подчёркивания после вставки: проверьте, что <b>(Name)</b> элементов совпадают с таблицей, и выполните <b>Build → Build Solution</b>.</div></section><section id="disc"><h2>10. Скидка — как она считается</h2><p>Скидка считается в запросе из <code>LoadCatalog</code> (<code>MainForm.cs</code>): <b>заказывали в прошлом месяце — цена базовая, иначе минус 25%</b>.</p><pre><code>        var thisMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        string order = cmbSort.SelectedIndex == 1 ? &quot;ORDER BY Price ASC&quot;
+                     : cmbSort.SelectedIndex == 2 ? &quot;ORDER BY Price DESC&quot; : &quot;ORDER BY p.Код_товара&quot;;
+        // Цена: заказывали в прошлом месяце — базовая, иначе минус 25%.
+        var t = Db.Table(@&quot;SELECT p.Код_товара AS ProductId, p.Наименование AS ProductName, p.Производство AS Manufacturer, p.Состав AS Composition,
+              p.Описание AS Description, p.Изображение AS ImageFileName, c.Название_категории AS CategoryName,
+              ISNULL((SELECT SUM(Количество) FROM Товарные_позиции WHERE Код_товара = p.Код_товара), 0) AS Qty,
+              CASE WHEN EXISTS (SELECT 1 FROM Строки_заказов oi
+                                JOIN Заказы o ON o.Код_заказа = oi.Код_заказа
+                                JOIN Товарные_позиции si ON si.Код_позиции = oi.Код_позиции
+                                WHERE si.Код_товара = p.Код_товара AND o.Дата_заказа &gt;= @a AND o.Дата_заказа &lt; @b)
+                   THEN p.Цена ELSE ROUND(p.Цена * 0.75, 2) END AS Price
+              FROM Товары p JOIN Категории c ON c.Код_категории = p.Код_категории
+              WHERE (p.Наименование LIKE @s OR p.Описание LIKE @s)
+                AND (@cat = 0 OR p.Код_категории = @cat) &quot; + order,
+            &quot;@a&quot;, thisMonth.AddMonths(-1), &quot;@b&quot;, thisMonth,
+            &quot;@s&quot;, &quot;%&quot; + txtSearch.Text + &quot;%&quot;, &quot;@cat&quot;, Session.IsAuth ? (int)cmbCat.SelectedValue : 0);
+</code></pre><ol><li><code>thisMonth</code> — первое число текущего месяца; <code>AddMonths(-1)</code> — первое число прошлого.</li><li>Прошлый месяц: <code>&gt;=</code> начало прошлого и <code>&lt;</code> начало текущего.</li><li><code>CASE WHEN EXISTS (…)</code> — «был ли товар в заказах за этот период».</li></ol><div class="block tip">Импортные заказы — апрель 2026, а «прошлый месяц» сейчас — сентябрь, поэтому скидка 25% у всех товаров. Это не баг. Чтобы увидеть обе ситуации, добавьте в SSMS заказ с датой прошлого месяца.</div></section><section id="run"><h2>11. Запуск и проверка</h2><div class="block action">Клавиша <b>F5</b> (зелёная кнопка ▶).</div><table><tr><th>Проверка</th><th>Ожидание</th></tr><tr><td>Заголовок, иконка</td><td>«Чудо Обувь — …»</td></tr><tr><td>Логотип</td><td>Не растянут</td></tr><tr><td>Нет фото</td><td>picture.png</td></tr><tr><td>Остаток ≤ 3</td><td>Красная карточка</td></tr><tr><td>Остаток 4–5 / &gt; 5</td><td>«мало» / «много»</td></tr></table><div class="block warn"><b>Ошибки:</b> «Cannot open database» — неверное имя сервера или базы; «Could not find file» — нет Copy if newer; пустое окно — не вызван LoadCatalog или БД пустая (импорт из задания 1).</div></section><section id="check"><h2>12. Чек-лист</h2><ul><li>☐ Ресурсы + Copy if newer</li><li>☐ Иконка, заголовок «Чудо Обувь»</li><li>☐ Calibri, #FFFFFF / #D2F6E7 / #70B2AF</li><li>☐ Скидка 25% по прошлому месяцу</li><li>☐ «много» &gt; 5, подсветка ≤ 3, заглушка</li><li>☐ Запуск без вылетов</li></ul></section></main></div>
+<a href="#" class="top-link" title="Наверх">↑</a><script src="../script.js"></script></body></html>

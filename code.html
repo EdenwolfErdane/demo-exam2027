@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Код и формы программы — Разбор ДЭ 2027</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="top"><a href="index.html" class="nav-back">← К выбору задания</a>
+<div class="brand"><h1>Код и формы программы</h1><div class="sub">Готовая программа с пояснениями</div></div>
+<button class="theme-toggle" id="themeToggle" title="Переключить тему"><span class="theme-icon">🌙</span><span class="theme-label">Тёмная</span></button></header>
+<div class="layout"><nav class="side"><h3>Содержание</h3><a href="#about">Что это за программа</a><a href="#download">Скачать</a><a href="#deliver">Что сдавать: структура папки</a><a href="#parts">Из чего состоит программа</a><a href="#views">Как выглядят окна</a><a href="#code1">Код: данные и запуск</a><a href="#elements">Элементы окон и их свойства</a><a href="#code2">Код: окна</a></nav><main><section id="about"><h2>Что это за программа</h2><p>«Чудо Обувь» — готовое приложение для заказа обуви: <b>C# Windows Forms</b> + <b>SQL Server</b>. Здесь собрано всё в одном месте: скачивание, что сдавать, из чего состоит программа, как выглядят окна и код каждого файла с пояснениями.</p><table><tr><th>Кто вошёл</th><th>Что может</th></tr><tr><td>Гость (без входа)</td><td>смотреть каталог</td></tr><tr><td>Авторизованный пользователь</td><td>каталог с поиском, фильтром и сортировкой; карточка товара; корзина; оформление заказа</td></tr><tr><td>Менеджер</td><td>всё это + список заказов, состав заказа, добавление и удаление заказа, выбор клиента</td></tr><tr><td>Администратор</td><td>всё менеджерское + смена даты заказа и удаление позиции заказа</td></tr></table><p><b>Как окна открываются друг из друга:</b></p><pre><code>Вход (LoginForm)
+   └── Каталог (MainForm) ──► Карточка товара (ProductForm) ──► «В заказ»
+          ├── Корзина (CartForm) ──► подтверждение → заказ в базе
+          └── Заказы (OrdersForm)        [менеджер, администратор]
+                 └── «Добавить» ──► Каталог (режим выбора) ──► Корзина ──► выбор клиента</code></pre></section><section id="download"><h2>Скачать</h2>
+<div class="block action"><a href="downloads/ChudoObuv.zip" download><b>⬇ ChudoObuv.zip</b></a> — <b>программа, по которой написан весь разбор</b> (упрощённая): исходный код и окна (<code>*.Designer.cs</code>), проект <code>.sln</code>, ресурсы, скрипты <code>Database.sql</code> и <code>Проверка.sql</code>, <code>Собрать.bat</code>, README.</div>
+<div class="block action"><a href="downloads/ChudoObuvOrders.zip" download><b>⬇ ChudoObuvOrders.zip</b></a> — <b>полная версия</b> программы: слои <code>Data</code>, <code>Models</code>, <code>Forms</code>, <code>UI</code>, типизированный набор данных, отдельные окна состава заказа и выбора товара/клиента. Сложнее для разбора, но показывает, как программу можно развивать дальше.</div>
+<div class="block warn">В архивах <b>исходный код</b>, готового <code>.exe</code> там нет. Получить программу можно за один клик: <b>двойной щелчок по <code>Собрать.bat</code></b> (в <code>ChudoObuv.zip</code>) — он соберёт <code>Bin\ChudoObuvOrders.exe</code> штатным компилятором из Windows (Visual Studio не нужна). Либо откройте <code>ChudoObuvOrders.sln</code> в Visual Studio → Release → Build Solution. Перед запуском впишите имя <b>своего</b> сервера SQL Server в <code>App.config</code> (для .exe — в <code>ChudoObuvOrders.exe.config</code>), параметр <code>Data Source</code>.</div>
+<div class="block warn">Проект в Visual Studio нужно назвать <code>ChudoObuvOrders</code> — под этим именем мастер подключения сохраняет строку подключения, которую читает <code>Db.cs</code>. Пошаговая сборка — в разборе задания 2.</div></section><section id="deliver"><h2>Что сдавать: структура папки</h2><p>По КИМ все практические результаты загружаются в <b>репозиторий</b>, который предоставят на экзамене. Результаты нужно загружать <b>по ходу работы</b>, а не в конце.</p><pre><code>ChudoObuvOrders/                          ← корень репозитория
+├── README.md                             ← описание функциональности (обязательно)
+├── ER_Чудо_Обувь.pdf                     ← ER-диаграмма
+├── Database/
+│   └── Чудо_Обувь.sql                    ← скрипт БД: таблицы + данные
+├── Import/                               ← подготовленные файлы Excel/CSV для импорта
+│   ├── Products.csv   Sizes.csv   StockItems.csv
+│   └── Users.csv      Orders.csv
+├── Source/                               ← исходный код (папками, НЕ архивом)
+│   ├── ChudoObuvOrders.sln
+│   └── ChudoObuvOrders/
+│       ├── ChudoObuvOrders.csproj
+│       ├── App.config                    ← строка подключения к БД
+│       ├── Program.cs   Db.cs   Session.cs
+│       ├── LoginForm.cs      LoginForm.Designer.cs
+│       ├── MainForm.cs       MainForm.Designer.cs
+│       ├── ProductCard.cs    ProductCard.Designer.cs
+│       ├── ProductForm.cs    ProductForm.Designer.cs
+│       ├── CartForm.cs       CartForm.Designer.cs
+│       ├── OrdersForm.cs     OrdersForm.Designer.cs
+│       ├── Properties/
+│       └── Resources/                    ← иконка, логотип, picture.png, Images/
+└── Bin/                                  ← исполняемые файлы
+    ├── ChudoObuvOrders.exe
+    ├── ChudoObuvOrders.exe.config        ← строка подключения для .exe
+    └── Resources/                        ← те же картинки рядом с .exe</code></pre><table><tr><th>Что</th><th>Откуда взять</th></tr><tr><td><code>README.md</code></td><td>создайте сами: что умеет программа, роли, как запустить (образец ниже)</td></tr><tr><td><code>ER_Чудо_Обувь.pdf</code></td><td>SSMS: диаграмма базы → печать в PDF (разбор задания 1, раздел «ER-диаграмма»)</td></tr><tr><td><code>Database/Чудо_Обувь.sql</code></td><td>SSMS: правой по базе → <b>Tasks → Generate Scripts…</b> → <b>Schema and data</b> (разбор задания 1)</td></tr><tr><td><code>Import/</code></td><td>подготовленные CSV/Excel (разбор задания 1, раздел про Excel)</td></tr><tr><td><code>Source/</code></td><td>папка решения Visual Studio целиком, кроме <code>bin</code>, <code>obj</code>, <code>.vs</code></td></tr><tr><td><code>Bin/</code></td><td>Visual Studio: сверху выберите <b>Release</b> → <b>Build → Build Solution</b> → скопируйте содержимое <code>Source\ChudoObuvOrders\bin\Release</code></td></tr></table><div class="block warn">Что <b>не</b> нужно: архивы (.zip) вместо папок; папки <code>.vs</code>, <code>obj</code>; пароли и личные данные. Файл конфигурации <code>.dt</code> из КИМ нужен только для платформы «1С» — для C# его нет.</div><div class="block tip">Проверка перед сдачей: скопируйте <code>Bin</code> на другую папку и запустите <code>.exe</code> — если падает с «файл не найден», рядом с ним нет папки <code>Resources</code>; если «Cannot open database» — неверная строка подключения в <code>.exe.config</code>.</div><h3>Образец README.md</h3><pre><code># Чудо Обувь — система оформления заказов обуви
+
+Приложение на C# (Windows Forms) с базой данных SQL Server.
+
+## Возможности
+- Вход по логину; просмотр каталога без входа.
+- Каталог: цена со скидкой 25% на товары, не заказывавшиеся в прошлом месяце; остаток «много/мало», подсветка при остатке 3 и меньше.
+- Поиск по наименованию и описанию, фильтр по категории, сортировка по цене.
+- Карточка товара, корзина, оформление заказа (остатки списываются).
+- Менеджер и администратор: список заказов, состав и итог, добавление и удаление заказа.
+- Администратор: изменение даты заказа, удаление товарной позиции.
+
+## Запуск
+1. Выполнить Database/Чудо_Обувь.sql в SQL Server Management Studio.
+2. Указать имя своего сервера в Bin/ChudoObuvOrders.exe.config.
+3. Запустить Bin/ChudoObuvOrders.exe.</code></pre></section><section id="parts"><h2>Из чего состоит программа</h2><table><tr><th>Файл</th><th>За что отвечает</th></tr><tr><td><code>Program.cs</code></td><td>запуск: окно входа → каталог; «Выйти» возвращает ко входу</td></tr><tr><td><code>Db.cs</code></td><td>единственное место, где программа обращается к базе данных</td></tr><tr><td><code>Session.cs</code></td><td>кто вошёл (<code>UserId</code>, роль), права, корзина</td></tr><tr><td><code>LoginForm</code></td><td>окно входа по логину и «Без входа»</td></tr><tr><td><code>MainForm</code></td><td>каталог: поиск, фильтр, сортировка, скидка</td></tr><tr><td><code>ProductCard</code></td><td>одна карточка товара в каталоге (подсветка, «много/мало», картинка)</td></tr><tr><td><code>ProductForm</code></td><td>форма просмотра товара и выбор размера</td></tr><tr><td><code>CartForm</code></td><td>корзина и оформление заказа</td></tr><tr><td><code>OrdersForm</code></td><td>заказы: список, состав, удаление, дата, позиции</td></tr><tr><td><code>*.Designer.cs</code></td><td>внешний вид окон — их создаёт Visual Studio, когда вы рисуете форму мышкой; писать вручную не нужно (лежат в архиве)</td></tr><tr><td><code>Resources/</code></td><td>иконка, логотип, заглушка <code>picture.png</code>, фото товаров</td></tr><tr><td><code>App.config</code></td><td>строка подключения к базе (создаётся мастером Visual Studio)</td></tr></table></section><section id="views"><h2>Как выглядят окна</h2><p>Имя в скобках — файл формы.</p><h3>Вход <code>LoginForm</code></h3><div style="border:1px solid #888;max-width:600px;margin:10px 0;background:#fff;color:#000;font:13px Calibri,sans-serif"><div style="background:#70B2AF;color:#fff;padding:4px 8px"><b>Чудо Обувь — Вход</b></div><div style="padding:10px">Логин: <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">введите логин</span><br><br><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Войти</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Без входа</span></div></div><h3>Каталог <code>MainForm</code></h3><div style="border:1px solid #888;max-width:600px;margin:10px 0;background:#fff;color:#000;font:13px Calibri,sans-serif"><div style="background:#70B2AF;color:#fff;padding:4px 8px"><b>Чудо Обувь — Каталог</b></div><div style="padding:10px"><span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">Поиск</span> <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">Сортировка ▾</span> <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">Все категории ▾</span> <span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Корзина (0)</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Заказы</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Выйти</span> ФИО<div style="background:#D2F6E7;padding:6px;margin-top:8px"><div style="display:flex;gap:8px;border:1px solid #999;padding:6px;margin-top:6px;background:#fff"><img src="img/p1.png" style="width:50px;height:50px;object-fit:contain"><div><b>Производство | Наименование</b><br>Категория · Состав<br><b>1 643 ₽ · много</b></div></div><div style="display:flex;gap:8px;border:1px solid #999;padding:6px;margin-top:6px;background:#ff8080"><img src="img/picture.png" style="width:50px;height:50px;object-fit:contain"><div><b>Производство | Наименование</b><br>Категория · Состав<br><b>3 000 ₽ · мало</b></div></div></div></div></div><h3>Просмотр товара <code>ProductForm</code></h3><div style="border:1px solid #888;max-width:600px;margin:10px 0;background:#fff;color:#000;font:13px Calibri,sans-serif"><div style="background:#70B2AF;color:#fff;padding:4px 8px"><b>Чудо Обувь — Товар</b></div><div style="padding:10px">[ изображение ] <b>Наименование</b><br>Производство · Категория · Цена со скидкой · Состав<br>Описание<br>Размерный ряд: 20 – 25<br>Доступные размеры: <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">22 ▾</span> Кол-во: <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">1</span><br><br><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">В заказ</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Назад</span></div></div><h3>Корзина <code>CartForm</code></h3><div style="border:1px solid #888;max-width:600px;margin:10px 0;background:#fff;color:#000;font:13px Calibri,sans-serif"><div style="background:#70B2AF;color:#fff;padding:4px 8px"><b>Чудо Обувь — Корзина</b></div><div style="padding:10px"><table border=1 cellpadding=3 style="border-collapse:collapse"><tr><th>Name</th><th>Size</th><th>Qty</th><th>Price</th></tr><tr><td>Кроссовки</td><td>22</td><td>1</td><td>1643</td></tr></table><br><span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">1</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Изменить кол-во</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Удалить позицию</span><br><br>Клиент: <span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">Сидорова Анна ▾</span> <small>(менеджер/админ)</small><br><br><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Подтвердить</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Отказаться</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Назад</span></div></div><h3>Заказы <code>OrdersForm</code></h3><div style="border:1px solid #888;max-width:600px;margin:10px 0;background:#fff;color:#000;font:13px Calibri,sans-serif"><div style="background:#70B2AF;color:#fff;padding:4px 8px"><b>Чудо Обувь — Заказы</b></div><div style="padding:10px"><table border=1 cellpadding=3 style="border-collapse:collapse"><tr><th>Номер</th><th>Дата</th><th>Клиент</th></tr><tr><td>1</td><td>02.04.2026</td><td>Сидорова Анна</td></tr></table><br><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Удалить заказ</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Добавить</span><span style="border:1px solid #666;padding:2px 8px;display:inline-block;min-width:110px;color:#777">дата</span><span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Сменить дату</span><br><br>[ состав выбранного заказа ]<br>Итого: 1 643 ₽ <span style="border:1px solid #666;background:#eee;padding:2px 10px;margin-right:4px;display:inline-block">Удалить позицию</span></div></div></section><section id="code1"><h2>Код: данные и запуск</h2><h3><code>Db.cs</code> — Работа с базой данных</h3><ul><li>Строка подключения берётся из <code>App.config</code> (её создаёт мастер Visual Studio).</li><li><code>Table</code> — выполнить SELECT и получить таблицу; <code>Run</code> — INSERT/UPDATE/DELETE; <code>Open</code> — открытое подключение для транзакции.</li><li>Значения передаются <b>параметрами</b> (<code>@l</code>, <code>@p</code>…), а не вставляются в текст запроса — так безопасно.</li></ul><pre><code>using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+
+// Всё общение с базой данных — в этом классе.
+public static class Db
+{
+    // Строку подключения создаёт мастер Visual Studio (раздел 6а) в App.config.
+    static string cs = ConfigurationManager
+        .ConnectionStrings[&quot;ChudoObuvOrders.Properties.Settings.ConnectionString&quot;].ConnectionString;
+
+    // Команда с параметрами: пары &quot;имя&quot;, значение, &quot;имя&quot;, значение...
+    public static SqlCommand Cmd(SqlConnection c, string sql, object[] p, SqlTransaction t = null)
+    {
+        var m = new SqlCommand(sql, c, t);
+        for (int i = 0; i &lt; p.Length; i += 2)
+            m.Parameters.AddWithValue((string)p[i], p[i + 1]);
+        return m;
+    }
+
+    // SELECT: вернуть таблицу.
+    public static DataTable Table(string sql, params object[] p)
+    {
+        using (var c = new SqlConnection(cs))
+        {
+            var t = new DataTable();
+            new SqlDataAdapter(Cmd(c, sql, p)).Fill(t);
+            return t;
+        }
+    }
+
+    // INSERT / UPDATE / DELETE.
+    public static void Run(string sql, params object[] p)
+    {
+        using (var c = new SqlConnection(cs))
+        {
+            c.Open();
+            Cmd(c, sql, p).ExecuteNonQuery();
+        }
+    }
+
+    // Открытое подключение — для транзакций.
+    public static SqlConnection Open()
+    {
+        var c = new SqlConnection(cs);
+        c.Open();
+        return c;
+    }
+}
+</code></pre><h3><code>Session.cs</code> — Кто вошёл и корзина</h3><ul><li>Статический класс: данные доступны из любого окна.</li><li><code>IsAuth</code>, <code>IsStaff</code> (менеджер или админ), <code>IsAdmin</code> — проверки прав. Роль определяется по началу названия.</li><li><code>Cart</code> — корзина (<code>BindingList</code>), таблица в окне корзины показывает её сама.</li></ul><pre><code>using System.ComponentModel;
+
+// Одна строка корзины.
+public class CartLine
+{
+    public int StockItemId { get; set; }
+    public string Name { get; set; }
+    public decimal Size { get; set; }
+    public int Qty { get; set; }
+    public decimal Price { get; set; }
+}
+
+// Кто сейчас вошёл и что лежит в корзине.
+public static class Session
+{
+    public static int UserId;
+    public static string FullName = &quot;&quot;;
+    public static string Role = &quot;&quot;;
+    public static bool LoggedOut;
+    public static BindingList&lt;CartLine&gt; Cart = new BindingList&lt;CartLine&gt;();
+
+    public static bool IsAuth { get { return UserId &gt; 0; } }
+    public static bool IsAdmin { get { return Role.StartsWith(&quot;Админ&quot;); } }
+    public static bool IsStaff { get { return IsAdmin || Role.StartsWith(&quot;Менед&quot;); } }
+
+    public static void Clear()
+    {
+        UserId = 0; FullName = &quot;&quot;; Role = &quot;&quot;;
+        Cart.Clear();
+    }
+}
+</code></pre><h3><code>Program.cs</code> — Запуск</h3><p>Цикл: окно входа → если вошли, главное окно → если нажали «Выйти», всё снова. Закрыли вход крестиком — программа завершается.</p><pre><code>using System;
+using System.Windows.Forms;
+
+static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        while (true)
+        {
+            // 1) окно входа; закрыли крестиком — выходим
+            using (var login = new LoginForm())
+                if (login.ShowDialog() != DialogResult.OK) break;
+            // 2) главное окно; если нажали «Выйти» — снова вход
+            Session.LoggedOut = false;
+            using (var main = new MainForm())
+                main.ShowDialog();
+            if (!Session.LoggedOut) break;
+        }
+    }
+}
+</code></pre></section><section id="elements"><h2>Элементы окон и их свойства</h2><p>Перед кодом — из чего собрано каждое окно: <b>тип элемента</b> (что перетащить из Toolbox), его <b>имя</b> (свойство <code>(Name)</code>) и <b>свойства, которые нужно задать</b> в окне Properties (F4). Именно эти имена используются в коде ниже. Эти же значения уже внесены в файлы <code>*.Designer.cs</code> из архива.</p><h3>Окно входа <code>LoginForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>LoginForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Вход</td></tr><tr><td>ClientSize</td><td>284, 151</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>Label</td><td><code>lblLogin</code></td><td><b>Text</b> = Логин: · <b>AutoSize</b> = True · <b>Location</b> = 20, 18</td></tr><tr><td>2</td><td>TextBox</td><td><code>txtLogin</code></td><td><b>Location</b> = 20, 40 · <b>Size</b> = 240, 23</td></tr><tr><td>3</td><td>Button</td><td><code>btnOk</code></td><td><b>Text</b> = Войти · <b>Location</b> = 20, 80 · <b>Size</b> = 110, 28</td></tr><tr><td>4</td><td>Button</td><td><code>btnGuest</code></td><td><b>Text</b> = Без входа · <b>Location</b> = 150, 80 · <b>Size</b> = 110, 28</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>btnOk</code></td><td>Click</td><td><code>btnOk_Click</code></td></tr><tr><td><code>btnGuest</code></td><td>Click</td><td><code>btnGuest_Click</code></td></tr></table><h3>Карточка товара (User Control) <code>ProductCard</code></h3><div class="block action">Правой по проекту → <b>Add → User Control (Windows Forms)</b> → имя <code>ProductCard</code> → <b>Add</b>. Щёлкните по пустому месту контрола → <b>F4</b>:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>ClientSize</td><td>880, 90</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>Panel</td><td><code>pnlRoot</code></td><td><b>Dock</b> = Fill · <b>BorderStyle</b> = FixedSingle · <b>Cursor</b> = Hand · <b>BackColor</b> = 255, 255, 255</td></tr><tr><td>2</td><td>PictureBox</td><td><code>picImage</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 5, 5 · <b>Size</b> = 80, 78 · <b>SizeMode</b> = Zoom</td></tr><tr><td>3</td><td>Label</td><td><code>lblInfo</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 95, 8 · <b>Size</b> = 660, 75</td></tr><tr><td>4</td><td>Label</td><td><code>lblPrice</code></td><td><i>(перетащить внутрь pnlRoot)</i> <b>Location</b> = 760, 8 · <b>Size</b> = 110, 75</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>pnlRoot</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>picImage</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>lblInfo</code></td><td>Click</td><td><code>Card_Click</code></td></tr><tr><td><code>lblPrice</code></td><td>Click</td><td><code>Card_Click</code></td></tr></table><div class="block tip">У четырёх элементов один метод <code>Card_Click</code>: создайте его у первого, а у остальных в списке справа от события <b>Click</b> выберите уже готовый <code>Card_Click</code>.</div><h3>Главное окно — каталог <code>MainForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>MainForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Каталог</td></tr><tr><td>ClientSize</td><td>944, 611</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>TextBox</td><td><code>txtSearch</code></td><td><b>Location</b> = 10, 10 · <b>Size</b> = 160, 23</td></tr><tr><td>2</td><td>ComboBox</td><td><code>cmbSort</code></td><td><b>Location</b> = 180, 10 · <b>Size</b> = 130, 23 · <b>DropDownStyle</b> = DropDownList · <b>Items</b> = кнопка … → строки: Без сортировки; Цена ↑; Цена ↓</td></tr><tr><td>3</td><td>ComboBox</td><td><code>cmbCat</code></td><td><b>Location</b> = 320, 10 · <b>Size</b> = 150, 23 · <b>DropDownStyle</b> = DropDownList</td></tr><tr><td>4</td><td>Button</td><td><code>btnCart</code></td><td><b>Text</b> = Корзина (0) · <b>Location</b> = 480, 8 · <b>Size</b> = 90, 28</td></tr><tr><td>5</td><td>Button</td><td><code>btnOrders</code></td><td><b>Text</b> = Заказы · <b>Location</b> = 575, 8 · <b>Size</b> = 80, 28</td></tr><tr><td>6</td><td>Button</td><td><code>btnExit</code></td><td><b>Text</b> = Выйти · <b>Location</b> = 660, 8 · <b>Size</b> = 70, 28</td></tr><tr><td>7</td><td>Label</td><td><code>lblUser</code></td><td><b>Text</b> = Гость · <b>AutoSize</b> = True · <b>Location</b> = 740, 13</td></tr><tr><td>8</td><td>FlowLayoutPanel</td><td><code>pnlCatalog</code></td><td><b>Location</b> = 0, 45 · <b>Size</b> = 944, 566 · <b>AutoScroll</b> = True · <b>BackColor</b> = 210, 246, 231 · <b>Anchor</b> = Top, Bottom, Left, Right</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>txtSearch</code></td><td>TextChanged</td><td><code>txtSearch_TextChanged</code></td></tr><tr><td><code>cmbSort</code></td><td>SelectedIndexChanged</td><td><code>cmbSort_SelectedIndexChanged</code></td></tr><tr><td><code>cmbCat</code></td><td>SelectedIndexChanged</td><td><code>cmbCat_SelectedIndexChanged</code></td></tr><tr><td><code>btnCart</code></td><td>Click</td><td><code>btnCart_Click</code></td></tr><tr><td><code>btnOrders</code></td><td>Click</td><td><code>btnOrders_Click</code></td></tr><tr><td><code>btnExit</code></td><td>Click</td><td><code>btnExit_Click</code></td></tr></table><div class="block warn">Карточки <code>ProductCard</code> появятся на панели только после того, как вы создадите контрол (раздел «Карточка») и соберёте проект: <b>Build → Build Solution</b>.</div><h3>Форма просмотра товара <code>ProductForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>ProductForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Товар</td></tr><tr><td>ClientSize</td><td>560, 410</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>PictureBox</td><td><code>picImage</code></td><td><b>Location</b> = 15, 15 · <b>Size</b> = 200, 200 · <b>SizeMode</b> = Zoom · <b>BorderStyle</b> = FixedSingle</td></tr><tr><td>2</td><td>Label</td><td><code>lblName</code></td><td><b>Location</b> = 230, 15 · <b>Size</b> = 315, 40</td></tr><tr><td>3</td><td>Label</td><td><code>lblManufacturer</code></td><td><b>Location</b> = 230, 60 · <b>Size</b> = 315, 20</td></tr><tr><td>4</td><td>Label</td><td><code>lblCategory</code></td><td><b>Location</b> = 230, 85 · <b>Size</b> = 315, 20</td></tr><tr><td>5</td><td>Label</td><td><code>lblPrice</code></td><td><b>Location</b> = 230, 110 · <b>Size</b> = 315, 20</td></tr><tr><td>6</td><td>Label</td><td><code>lblComposition</code></td><td><b>Location</b> = 230, 135 · <b>Size</b> = 315, 60</td></tr><tr><td>7</td><td>Label</td><td><code>lblDescription</code></td><td><b>Location</b> = 15, 225 · <b>Size</b> = 530, 55</td></tr><tr><td>8</td><td>Label</td><td><code>lblRange</code></td><td><b>Location</b> = 15, 290 · <b>Size</b> = 530, 20</td></tr><tr><td>9</td><td>Label</td><td><code>lblSizeCaption</code></td><td><b>Text</b> = Доступные размеры: · <b>AutoSize</b> = True · <b>Location</b> = 15, 325</td></tr><tr><td>10</td><td>ComboBox</td><td><code>cmbSize</code></td><td><b>Location</b> = 150, 322 · <b>Size</b> = 90, 23 · <b>DropDownStyle</b> = DropDownList</td></tr><tr><td>11</td><td>Label</td><td><code>lblQtyCaption</code></td><td><b>Text</b> = Кол-во: · <b>AutoSize</b> = True · <b>Location</b> = 265, 325</td></tr><tr><td>12</td><td>NumericUpDown</td><td><code>nudQty</code></td><td><b>Location</b> = 325, 322 · <b>Size</b> = 80, 23 · <b>Minimum</b> = 1</td></tr><tr><td>13</td><td>Button</td><td><code>btnAdd</code></td><td><b>Text</b> = В заказ · <b>Location</b> = 15, 365 · <b>Size</b> = 130, 30</td></tr><tr><td>14</td><td>Button</td><td><code>btnBack</code></td><td><b>Text</b> = Назад · <b>Location</b> = 160, 365 · <b>Size</b> = 130, 30</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>cmbSize</code></td><td>SelectedIndexChanged</td><td><code>cmbSize_SelectedIndexChanged</code></td></tr><tr><td><code>btnAdd</code></td><td>Click</td><td><code>btnAdd_Click</code></td></tr><tr><td><code>btnBack</code></td><td>Click</td><td><code>btnBack_Click</code></td></tr></table><h3>Корзина <code>CartForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>CartForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Корзина</td></tr><tr><td>ClientSize</td><td>584, 390</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>DataGridView</td><td><code>gridCart</code></td><td><b>Location</b> = 10, 10 · <b>Size</b> = 560, 250 · <b>ReadOnly</b> = True · <b>AllowUserToAddRows</b> = False · <b>SelectionMode</b> = FullRowSelect · <b>AutoSizeColumnsMode</b> = Fill</td></tr><tr><td>2</td><td>NumericUpDown</td><td><code>nudQty</code></td><td><b>Location</b> = 10, 272 · <b>Size</b> = 60, 23 · <b>Minimum</b> = 1</td></tr><tr><td>3</td><td>Button</td><td><code>btnQty</code></td><td><b>Text</b> = Изменить кол-во · <b>Location</b> = 80, 270 · <b>Size</b> = 130, 28</td></tr><tr><td>4</td><td>Button</td><td><code>btnDelete</code></td><td><b>Text</b> = Удалить позицию · <b>Location</b> = 220, 270 · <b>Size</b> = 130, 28</td></tr><tr><td>5</td><td>Label</td><td><code>lblClient</code></td><td><b>Text</b> = Клиент: · <b>AutoSize</b> = True · <b>Location</b> = 10, 318</td></tr><tr><td>6</td><td>ComboBox</td><td><code>cmbClient</code></td><td><b>Location</b> = 70, 315 · <b>Size</b> = 280, 23 · <b>DropDownStyle</b> = DropDownList</td></tr><tr><td>7</td><td>Button</td><td><code>btnConfirm</code></td><td><b>Text</b> = Подтвердить · <b>Location</b> = 10, 350 · <b>Size</b> = 110, 28</td></tr><tr><td>8</td><td>Button</td><td><code>btnCancel</code></td><td><b>Text</b> = Отказаться · <b>Location</b> = 130, 350 · <b>Size</b> = 110, 28</td></tr><tr><td>9</td><td>Button</td><td><code>btnBack</code></td><td><b>Text</b> = Назад · <b>Location</b> = 470, 350 · <b>Size</b> = 100, 28</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>btnQty</code></td><td>Click</td><td><code>btnQty_Click</code></td></tr><tr><td><code>btnDelete</code></td><td>Click</td><td><code>btnDelete_Click</code></td></tr><tr><td><code>btnConfirm</code></td><td>Click</td><td><code>btnConfirm_Click</code></td></tr><tr><td><code>btnCancel</code></td><td>Click</td><td><code>btnCancel_Click</code></td></tr><tr><td><code>btnBack</code></td><td>Click</td><td><code>btnBack_Click</code></td></tr></table><h3>Заказы (менеджер и администратор) <code>OrdersForm</code></h3><div class="block action">Правой по проекту → <b>Add → Form (Windows Forms)</b> → имя <code>OrdersForm</code> → <b>Add</b>. Щёлкните по пустому месту окна → <b>F4</b> и задайте свойства формы:</div><table><tr><th>Свойство формы</th><th>Значение</th></tr><tr><td>Text</td><td>Чудо Обувь — Заказы</td></tr><tr><td>ClientSize</td><td>684, 411</td></tr><tr><td>Font</td><td>Calibri, 10pt (кнопка …)</td></tr><tr><td>BackColor</td><td>255, 255, 255</td></tr><tr><td>StartPosition</td><td>CenterScreen</td></tr></table><p>Теперь из <b>Toolbox</b> перетаскивайте элементы и в <b>Properties (F4)</b> меняйте перечисленные строки. Положение и размер можно просто задать мышью — цифры ориентировочные.</p><table><tr><th>№</th><th>Элемент Toolbox</th><th>(Name)</th><th>Что поменять в Properties</th></tr><tr><td>1</td><td>DataGridView</td><td><code>gridOrders</code></td><td><b>Location</b> = 10, 10 · <b>Size</b> = 660, 150 · <b>ReadOnly</b> = True · <b>AllowUserToAddRows</b> = False · <b>SelectionMode</b> = FullRowSelect · <b>AutoSizeColumnsMode</b> = Fill</td></tr><tr><td>2</td><td>Button</td><td><code>btnDelete</code></td><td><b>Text</b> = Удалить заказ · <b>Location</b> = 10, 165 · <b>Size</b> = 120, 28</td></tr><tr><td>3</td><td>Button</td><td><code>btnAdd</code></td><td><b>Text</b> = Добавить · <b>Location</b> = 140, 165 · <b>Size</b> = 100, 28</td></tr><tr><td>4</td><td>DateTimePicker</td><td><code>dtp</code></td><td><b>Location</b> = 400, 165 · <b>Size</b> = 130, 23</td></tr><tr><td>5</td><td>Button</td><td><code>btnDate</code></td><td><b>Text</b> = Сменить дату · <b>Location</b> = 540, 165 · <b>Size</b> = 130, 28</td></tr><tr><td>6</td><td>DataGridView</td><td><code>gridItems</code></td><td><b>Location</b> = 10, 200 · <b>Size</b> = 660, 150 · <b>ReadOnly</b> = True · <b>AllowUserToAddRows</b> = False · <b>SelectionMode</b> = FullRowSelect · <b>AutoSizeColumnsMode</b> = Fill</td></tr><tr><td>7</td><td>Label</td><td><code>lblTotal</code></td><td><b>Text</b> = Итого: 0 ₽ · <b>AutoSize</b> = True · <b>Location</b> = 10, 355</td></tr><tr><td>8</td><td>Button</td><td><code>btnDelItem</code></td><td><b>Text</b> = Удалить позицию · <b>Location</b> = 540, 355 · <b>Size</b> = 130, 28</td></tr></table><p><b>События</b> (в Properties нажмите ⚡, найдите событие и <b>дважды щёлкните</b> справа от него — студия создаст метод и откроет код; для кнопок достаточно двойного щелчка по самой кнопке):</p><table><tr><th>Элемент</th><th>Событие</th><th>Метод</th></tr><tr><td><code>gridOrders</code></td><td>SelectionChanged</td><td><code>gridOrders_SelectionChanged</code></td></tr><tr><td><code>btnDelete</code></td><td>Click</td><td><code>btnDelete_Click</code></td></tr><tr><td><code>btnAdd</code></td><td>Click</td><td><code>btnAdd_Click</code></td></tr><tr><td><code>btnDate</code></td><td>Click</td><td><code>btnDate_Click</code></td></tr><tr><td><code>btnDelItem</code></td><td>Click</td><td><code>btnDelItem_Click</code></td></tr></table></section><section id="code2"><h2>Код: окна</h2><h3><code>LoginForm.cs</code> — Вход по логину</h3><ul><li>Пустой логин — предупреждение; неизвестный — «Пользователь не найден».</li><li>Один запрос берёт ФИО и роль (<code>JOIN</code> с таблицей ролей).</li><li>«Без входа» просто закрывает окно с OK — в <code>Session</code> остаётся гость.</li></ul><pre><code>using System;
+using System.Windows.Forms;
+
+// Внешний вид окна настраивается мышкой (LoginForm.Designer.cs). Здесь — только логика.
+public partial class LoginForm : Form
+{
+    public LoginForm() { InitializeComponent(); }
+
+    // Кнопка «Войти»
+    private void btnOk_Click(object sender, EventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(txtLogin.Text))
+        {
+            MessageBox.Show(&quot;Введите логин из списка пользователей и нажмите «Войти».&quot;, &quot;Ошибка входа&quot;,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        var t = Db.Table(@&quot;SELECT u.Код_пользователя AS UserId, u.Фамилия + &#x27; &#x27; + u.Имя + &#x27; &#x27; + ISNULL(u.Отчество,&#x27;&#x27;) AS Fio, r.Название_роли AS RoleName
+                           FROM Пользователи u JOIN Роли r ON r.Код_роли = u.Код_роли WHERE u.Логин = @l&quot;,
+                         &quot;@l&quot;, txtLogin.Text.Trim());
+        if (t.Rows.Count == 0)
+        {
+            MessageBox.Show(&quot;Пользователь не найден. Проверьте логин.&quot;, &quot;Ошибка входа&quot;,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        Session.UserId = (int)t.Rows[0][&quot;UserId&quot;];
+        Session.FullName = (string)t.Rows[0][&quot;Fio&quot;];
+        Session.Role = (string)t.Rows[0][&quot;RoleName&quot;];
+        DialogResult = DialogResult.OK;
+    }
+
+    // Кнопка «Без входа»
+    private void btnGuest_Click(object sender, EventArgs e)
+    {
+        DialogResult = DialogResult.OK;
+    }
+}
+</code></pre><h3><code>MainForm.cs</code> — Каталог</h3><ul><li><code>LoadCatalog</code> — один запрос учитывает сразу <b>поиск</b> (по наименованию и описанию), <b>фильтр</b> категории, <b>сортировку</b> по цене со скидкой и <b>скидку 25%</b> (если товар не заказывали в прошлом месяце).</li><li>Любое изменение поиска/списков сразу перерисовывает каталог.</li><li>Гость не видит поиск, фильтр, сортировку и корзину; «Заказы» — только персоналу.</li><li><code>MainForm(true)</code> — режим выбора товара для нового заказа из окна «Заказы».</li></ul><pre><code>using System;
+using System.Data;
+using System.Windows.Forms;
+
+// Каталог: поиск, фильтр, сортировка, карточки. Вид окна — в MainForm.Designer.cs.
+public partial class MainForm : Form
+{
+    bool ready = false;   // пока окно строится, каталог не перечитываем
+    bool pick;            // true — каталог открыт из «Заказов» для добавления заказа
+
+    public MainForm(bool pick = false)
+    {
+        InitializeComponent();
+        this.pick = pick;
+        cmbCat.DisplayMember = &quot;CategoryName&quot;;
+        cmbCat.ValueMember = &quot;CategoryId&quot;;
+        cmbCat.DataSource = Db.Table(&quot;SELECT 0 AS CategoryId, N&#x27;Все категории&#x27; AS CategoryName UNION ALL SELECT Код_категории, Название_категории FROM Категории&quot;);
+        cmbSort.SelectedIndex = 0;
+        // Права: гость не ищет и не фильтрует; «Заказы» — менеджер/админ.
+        txtSearch.Visible = cmbSort.Visible = cmbCat.Visible = btnCart.Visible = Session.IsAuth;
+        btnOrders.Visible = Session.IsStaff;
+        lblUser.Text = Session.IsAuth ? Session.FullName : &quot;Гость&quot;;
+        if (pick) { btnOrders.Visible = false; btnExit.Text = &quot;Назад&quot;; }
+        ready = true;
+        LoadCatalog();
+    }
+
+    // Поиск, сортировка, фильтр — любое изменение перерисовывает каталог.
+    private void txtSearch_TextChanged(object sender, EventArgs e) { LoadCatalog(); }
+    private void cmbSort_SelectedIndexChanged(object sender, EventArgs e) { LoadCatalog(); }
+    private void cmbCat_SelectedIndexChanged(object sender, EventArgs e) { LoadCatalog(); }
+
+    private void btnCart_Click(object sender, EventArgs e) { new CartForm().ShowDialog(); LoadCatalog(); }
+    private void btnOrders_Click(object sender, EventArgs e) { new OrdersForm().ShowDialog(); LoadCatalog(); }
+    private void btnExit_Click(object sender, EventArgs e)
+    {
+        if (!pick)   // «Выйти» — на экран входа; «Назад» просто закрывает окно
+        {
+            Session.Clear();
+            Session.LoggedOut = true;
+        }
+        Close();
+    }
+
+    void LoadCatalog()
+    {
+        if (!ready) return;
+        // Прошлый месяц: с 1-го числа прошлого месяца до 1-го числа этого (не включая).
+        var thisMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        string order = cmbSort.SelectedIndex == 1 ? &quot;ORDER BY Price ASC&quot;
+                     : cmbSort.SelectedIndex == 2 ? &quot;ORDER BY Price DESC&quot; : &quot;ORDER BY p.Код_товара&quot;;
+        // Цена: заказывали в прошлом месяце — базовая, иначе минус 25%.
+        var t = Db.Table(@&quot;SELECT p.Код_товара AS ProductId, p.Наименование AS ProductName, p.Производство AS Manufacturer, p.Состав AS Composition,
+              p.Описание AS Description, p.Изображение AS ImageFileName, c.Название_категории AS CategoryName,
+              ISNULL((SELECT SUM(Количество) FROM Товарные_позиции WHERE Код_товара = p.Код_товара), 0) AS Qty,
+              CASE WHEN EXISTS (SELECT 1 FROM Строки_заказов oi
+                                JOIN Заказы o ON o.Код_заказа = oi.Код_заказа
+                                JOIN Товарные_позиции si ON si.Код_позиции = oi.Код_позиции
+                                WHERE si.Код_товара = p.Код_товара AND o.Дата_заказа &gt;= @a AND o.Дата_заказа &lt; @b)
+                   THEN p.Цена ELSE ROUND(p.Цена * 0.75, 2) END AS Price
+              FROM Товары p JOIN Категории c ON c.Код_категории = p.Код_категории
+              WHERE (p.Наименование LIKE @s OR p.Описание LIKE @s)
+                AND (@cat = 0 OR p.Код_категории = @cat) &quot; + order,
+            &quot;@a&quot;, thisMonth.AddMonths(-1), &quot;@b&quot;, thisMonth,
+            &quot;@s&quot;, &quot;%&quot; + txtSearch.Text + &quot;%&quot;, &quot;@cat&quot;, Session.IsAuth ? (int)cmbCat.SelectedValue : 0);
+
+        pnlCatalog.Controls.Clear();
+        foreach (DataRow r in t.Rows)
+        {
+            var card = new ProductCard();
+            card.Bind(r);
+            card.Clicked += OpenProduct;
+            pnlCatalog.Controls.Add(card);
+        }
+        btnCart.Text = &quot;Корзина (&quot; + Session.Cart.Count + &quot;)&quot;;
+    }
+
+    void OpenProduct(DataRow r)
+    {
+        new ProductForm(r).ShowDialog();
+        LoadCatalog();
+    }
+}
+</code></pre><h3><code>ProductCard.cs</code> — Карточка в каталоге</h3><ul><li>Остаток 3 и меньше — красный фон; «много» — больше 5, иначе «мало» (два разных порога).</li><li>Нет картинки или файла — <code>picture.png</code>.</li><li>Клик по любому элементу карточки сообщает каталогу, какой товар выбран.</li></ul><pre><code>using System;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+// Карточка товара в каталоге (User Control). Вид — в Designer, здесь — заполнение данными.
+public partial class ProductCard : UserControl
+{
+    public event Action&lt;DataRow&gt; Clicked;
+    DataRow row;
+
+    public ProductCard() { InitializeComponent(); }
+
+    public void Bind(DataRow r)
+    {
+        row = r;
+        int qty = (int)r[&quot;Qty&quot;];
+        // Мало на складе (3 и меньше) — красный фон.
+        pnlRoot.BackColor = qty &lt;= 3 ? Color.FromArgb(255, 128, 128) : Color.White;
+        lblInfo.Text = r[&quot;Manufacturer&quot;] + &quot; | &quot; + r[&quot;ProductName&quot;] + &quot;\n&quot; + r[&quot;CategoryName&quot;] + &quot;\nСостав: &quot; + r[&quot;Composition&quot;];
+        lblPrice.Text = ((decimal)r[&quot;Price&quot;]).ToString(&quot;N0&quot;) + &quot; ₽\n&quot; + (qty &gt; 5 ? &quot;много&quot; : &quot;мало&quot;);
+        picImage.Image = LoadImage(r[&quot;ImageFileName&quot;] as string);
+    }
+
+    // Нет картинки (пусто или файла нет) — берём заглушку picture.png.
+    public static Image LoadImage(string fileName)
+    {
+        string path = Path.Combine(Application.StartupPath, &quot;Resources&quot;, &quot;Images&quot;, fileName ?? &quot;&quot;);
+        if (!File.Exists(path)) path = Path.Combine(Application.StartupPath, &quot;Resources&quot;, &quot;picture.png&quot;);
+        return Image.FromFile(path);
+    }
+
+    // Один обработчик Click на панель, картинку и обе надписи.
+    private void Card_Click(object sender, EventArgs e)
+    {
+        if (Clicked != null) Clicked(row);
+    }
+}
+</code></pre><h3><code>ProductForm.cs</code> — Просмотр товара</h3><ul><li>Все поля из требований: изображение, производство, наименование, категория, цена со скидкой, состав, описание.</li><li><b>Размерный ряд</b> — от наименьшего до наибольшего размера модели; <b>доступные размеры</b> — только с остатком больше 0.</li><li>Количество нельзя заказать больше остатка выбранного размера.</li></ul><pre><code>using System;
+using System.Data;
+using System.Windows.Forms;
+
+// Форма просмотра товара. Вид — в ProductForm.Designer.cs.
+public partial class ProductForm : Form
+{
+    string name; decimal price;
+
+    public ProductForm(DataRow r)
+    {
+        InitializeComponent();
+        name = (string)r[&quot;ProductName&quot;];
+        price = (decimal)r[&quot;Price&quot;];
+        int productId = (int)r[&quot;ProductId&quot;];
+        // Все поля заполняются данными выбранного товара.
+        Text = &quot;Чудо Обувь — &quot; + name;
+        lblName.Text = name;
+        lblManufacturer.Text = &quot;Производство: &quot; + r[&quot;Manufacturer&quot;];
+        lblCategory.Text = &quot;Категория: &quot; + r[&quot;CategoryName&quot;];
+        lblPrice.Text = &quot;Цена со скидкой: &quot; + price.ToString(&quot;N0&quot;) + &quot; ₽&quot;;
+        lblComposition.Text = &quot;Состав: &quot; + r[&quot;Composition&quot;];
+        lblDescription.Text = &quot;Описание: &quot; + r[&quot;Description&quot;];
+        picImage.Image = ProductCard.LoadImage(r[&quot;ImageFileName&quot;] as string);
+
+        // Размерный ряд — все размеры модели, от наименьшего до наибольшего.
+        var range = Db.Table(@&quot;SELECT MIN(z.Размер) AS MinSize, MAX(z.Размер) AS MaxSize FROM Товарные_позиции s
+                               JOIN Размеры z ON z.Код_размера = s.Код_размера WHERE s.Код_товара = @p&quot;, &quot;@p&quot;, productId);
+        lblRange.Text = range.Rows[0][&quot;MinSize&quot;] is DBNull ? &quot;Размерный ряд: нет данных&quot;
+            : &quot;Размерный ряд: &quot; + ((decimal)range.Rows[0][&quot;MinSize&quot;]).ToString(&quot;0.#&quot;) + &quot; – &quot; + ((decimal)range.Rows[0][&quot;MaxSize&quot;]).ToString(&quot;0.#&quot;);
+
+        // Доступные для заказа размеры — только те, что есть на складе.
+        var sizes = Db.Table(@&quot;SELECT s.Код_позиции AS StockItemId, z.Размер AS SizeValue, s.Количество AS Quantity FROM Товарные_позиции s
+                               JOIN Размеры z ON z.Код_размера = s.Код_размера
+                               WHERE s.Код_товара = @p AND s.Количество &gt; 0 ORDER BY z.Размер&quot;, &quot;@p&quot;, productId);
+        cmbSize.DisplayMember = &quot;SizeValue&quot;;
+        cmbSize.ValueMember = &quot;StockItemId&quot;;
+        cmbSize.DataSource = sizes;
+        btnAdd.Visible = Session.IsAuth &amp;&amp; sizes.Rows.Count &gt; 0;
+    }
+
+    // Выбрали размер — больше остатка этого размера заказать нельзя.
+    private void cmbSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        var row = cmbSize.SelectedItem as DataRowView;
+        if (row != null) nudQty.Maximum = (int)row[&quot;Quantity&quot;];
+    }
+
+    private void btnAdd_Click(object sender, EventArgs e)
+    {
+        var row = (DataRowView)cmbSize.SelectedItem;
+        Session.Cart.Add(new CartLine { StockItemId = (int)row[&quot;StockItemId&quot;], Name = name,
+            Size = (decimal)row[&quot;SizeValue&quot;], Qty = (int)nudQty.Value, Price = price });
+        MessageBox.Show(&quot;Добавлено в заказ. Можно выбрать ещё товары или открыть корзину.&quot;, &quot;Готово&quot;,
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        Close();
+    }
+
+    private void btnBack_Click(object sender, EventArgs e) { Close(); }
+}
+</code></pre><h3><code>CartForm.cs</code> — Корзина и заказ</h3><ul><li>Изменить количество, удалить позицию, отказаться (очистить корзину).</li><li>Менеджер и администратор выбирают <b>клиента</b>, обычный пользователь заказывает на себя.</li><li>Заказ — <b>транзакция</b>: либо заказ записан и остатки списаны, либо при ошибке (не хватило товара) ничего не меняется.</li><li>Цена в строке заказа фиксируется на момент заказа.</li></ul><pre><code>using System;
+using System.Windows.Forms;
+
+// Корзина и оформление заказа. Вид — в CartForm.Designer.cs.
+public partial class CartForm : Form
+{
+    public CartForm()
+    {
+        InitializeComponent();
+        gridCart.DataSource = Session.Cart;   // таблица сама показывает список
+        // Менеджер и администратор оформляют заказ на выбранного клиента.
+        lblClient.Visible = cmbClient.Visible = Session.IsStaff;
+        if (Session.IsStaff)
+        {
+            cmbClient.DisplayMember = &quot;Fio&quot;;
+            cmbClient.ValueMember = &quot;UserId&quot;;
+            cmbClient.DataSource = Db.Table(&quot;SELECT Код_пользователя AS UserId, Фамилия + &#x27; &#x27; + Имя + &#x27; &#x27; + ISNULL(Отчество, &#x27;&#x27;) AS Fio FROM Пользователи ORDER BY Фамилия&quot;);
+        }
+    }
+
+    // Изменить количество у выбранной строки.
+    private void btnQty_Click(object sender, EventArgs e)
+    {
+        if (gridCart.CurrentRow == null) return;
+        int i = gridCart.CurrentRow.Index;
+        Session.Cart[i].Qty = (int)nudQty.Value;
+        Session.Cart.ResetItem(i);   // перерисовать строку
+    }
+
+    private void btnDelete_Click(object sender, EventArgs e)
+    {
+        if (gridCart.CurrentRow != null) Session.Cart.RemoveAt(gridCart.CurrentRow.Index);
+    }
+
+    private void btnCancel_Click(object sender, EventArgs e)
+    {
+        if (MessageBox.Show(&quot;Очистить корзину?&quot;, &quot;Отказ&quot;, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        { Session.Cart.Clear(); Close(); }
+    }
+
+    private void btnBack_Click(object sender, EventArgs e) { Close(); }
+
+    private void btnConfirm_Click(object sender, EventArgs e)
+    {
+        if (Session.Cart.Count == 0) { MessageBox.Show(&quot;Корзина пуста.&quot;, &quot;Внимание&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+        if (MessageBox.Show(&quot;Оформить заказ?&quot;, &quot;Подтверждение&quot;, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+        try
+        {
+            int clientId = Session.IsStaff ? (int)cmbClient.SelectedValue : Session.UserId;
+            using (var c = Db.Open())
+            using (var t = c.BeginTransaction())      // всё или ничего
+            {
+                try
+                {
+                    int orderId = (int)Db.Cmd(c, &quot;INSERT INTO Заказы (Код_пользователя) OUTPUT INSERTED.Код_заказа VALUES (@u)&quot;,
+                        new object[] { &quot;@u&quot;, clientId }, t).ExecuteScalar();
+                    foreach (var l in Session.Cart)
+                    {
+                        // Списываем остаток; если не хватило — 0 строк изменено.
+                        int n = Db.Cmd(c, &quot;UPDATE Товарные_позиции SET Количество = Количество - @q WHERE Код_позиции = @s AND Количество &gt;= @q&quot;,
+                            new object[] { &quot;@q&quot;, l.Qty, &quot;@s&quot;, l.StockItemId }, t).ExecuteNonQuery();
+                        if (n == 0) throw new Exception(&quot;Не хватает на складе: &quot; + l.Name);
+                        Db.Cmd(c, &quot;INSERT INTO Строки_заказов (Код_заказа, Код_позиции, Количество, Цена_за_единицу) VALUES (@o, @s, @q, @p)&quot;,
+                            new object[] { &quot;@o&quot;, orderId, &quot;@s&quot;, l.StockItemId, &quot;@q&quot;, l.Qty, &quot;@p&quot;, l.Price }, t).ExecuteNonQuery();
+                    }
+                    t.Commit();
+                }
+                catch { t.Rollback(); throw; }
+            }
+            Session.Cart.Clear();
+            MessageBox.Show(&quot;Заказ оформлен.&quot;, &quot;Готово&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, &quot;Не удалось оформить заказ&quot;, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+}
+</code></pre><h3><code>OrdersForm.cs</code> — Заказы (персонал)</h3><ul><li>Список: номер, дата, ФИО клиента; при выборе заказа внизу его состав и итог (количество × цена).</li><li>Удаление заказа и позиции <b>возвращает товар на склад</b>.</li><li>Смена даты и удаление позиции — только администратору (кнопки скрыты у менеджера).</li><li>«Добавить» открывает каталог в режиме выбора товара.</li></ul><pre><code>using System;
+using System.Data;
+using System.Windows.Forms;
+
+// Заказы (менеджер/админ). Вид — в OrdersForm.Designer.cs.
+public partial class OrdersForm : Form
+{
+    public OrdersForm()
+    {
+        InitializeComponent();
+        // Дата и удаление позиции — только администратору.
+        dtp.Visible = btnDate.Visible = btnDelItem.Visible = Session.IsAdmin;
+        LoadOrders();
+    }
+
+    int OrderId() { return gridOrders.CurrentRow == null ? 0 : (int)gridOrders.CurrentRow.Cells[&quot;Номер&quot;].Value; }
+
+    void LoadOrders()
+    {
+        gridOrders.DataSource = Db.Table(@&quot;SELECT o.Код_заказа AS Номер, o.Дата_заказа AS Дата, u.Фамилия + &#x27; &#x27; + u.Имя AS Клиент
+                                           FROM Заказы o JOIN Пользователи u ON u.Код_пользователя = o.Код_пользователя ORDER BY o.Дата_заказа DESC&quot;);
+        LoadItems();
+    }
+
+    void LoadItems()
+    {
+        var t = Db.Table(@&quot;SELECT oi.Код_строки AS Код, p.Производство + &#x27; | &#x27; + p.Наименование AS Модель, z.Размер AS Размер, oi.Количество AS Количество, oi.Цена_за_единицу AS Цена
+                           FROM Строки_заказов oi JOIN Товарные_позиции s ON s.Код_позиции = oi.Код_позиции
+                           JOIN Товары p ON p.Код_товара = s.Код_товара JOIN Размеры z ON z.Код_размера = s.Код_размера
+                           WHERE oi.Код_заказа = @o&quot;, &quot;@o&quot;, OrderId());
+        gridItems.DataSource = t;
+        decimal sum = 0;
+        foreach (DataRow r in t.Rows) sum += (int)r[&quot;Количество&quot;] * (decimal)r[&quot;Цена&quot;];
+        lblTotal.Text = &quot;Итого: &quot; + sum.ToString(&quot;N2&quot;) + &quot; ₽&quot;;
+    }
+
+    // Выбрали заказ — показываем его состав.
+    private void gridOrders_SelectionChanged(object sender, EventArgs e) { LoadItems(); }
+
+    private void btnAdd_Click(object sender, EventArgs e)
+    {
+        // Каталог с поиском → карточка → корзина → выбор клиента → подтверждение.
+        new MainForm(true).ShowDialog();
+        LoadOrders();
+    }
+
+    private void btnDelete_Click(object sender, EventArgs e)
+    {
+        if (OrderId() == 0) return;
+        if (MessageBox.Show(&quot;Удалить заказ и вернуть товар на склад?&quot;, &quot;Удаление&quot;, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+        // Сначала вернуть остатки, потом удалить (позиции удалятся каскадом).
+        Db.Run(@&quot;UPDATE s SET s.Количество = s.Количество + oi.Количество FROM Товарные_позиции s
+                 JOIN Строки_заказов oi ON oi.Код_позиции = s.Код_позиции WHERE oi.Код_заказа = @o&quot;, &quot;@o&quot;, OrderId());
+        Db.Run(&quot;DELETE FROM Заказы WHERE Код_заказа = @o&quot;, &quot;@o&quot;, OrderId());
+        LoadOrders();
+    }
+
+    private void btnDate_Click(object sender, EventArgs e)
+    {
+        if (OrderId() == 0) return;
+        Db.Run(&quot;UPDATE Заказы SET Дата_заказа = @d WHERE Код_заказа = @o&quot;, &quot;@d&quot;, dtp.Value, &quot;@o&quot;, OrderId());
+        LoadOrders();
+    }
+
+    private void btnDelItem_Click(object sender, EventArgs e)
+    {
+        if (gridItems.CurrentRow == null) return;
+        int id = (int)gridItems.CurrentRow.Cells[&quot;Код&quot;].Value;
+        Db.Run(@&quot;UPDATE s SET s.Количество = s.Количество + oi.Количество FROM Товарные_позиции s
+                 JOIN Строки_заказов oi ON oi.Код_позиции = s.Код_позиции WHERE oi.Код_строки = @i&quot;, &quot;@i&quot;, id);
+        Db.Run(&quot;DELETE FROM Строки_заказов WHERE Код_строки = @i&quot;, &quot;@i&quot;, id);
+        LoadItems();
+    }
+}
+</code></pre><div class="block tip">Файлы <code>*.Designer.cs</code> здесь не показаны: это автоматически созданный код внешнего вида окон. Как собрать окна мышкой — в разборе заданий 2–4.</div></section></main></div><a href="#" class="top-link">↑</a><script src="script.js"></script></body></html>

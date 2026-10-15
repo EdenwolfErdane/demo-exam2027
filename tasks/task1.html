@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задание 1. Разработка БД — Разбор ДЭ 2027</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="top">
+  <a href="../index.html" class="nav-back">← К выбору задания</a>
+  <div class="brand">
+    <h1>Задание 1. Разработка базы данных средствами СУБД</h1>
+    <div class="sub">Разбор примерного задания ДЭ 2027 · СУБД: Microsoft SQL Server · 15 баллов</div>
+  </div>
+  <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+    <span class="theme-icon">🌙</span>
+    <span class="theme-label">Тёмная</span>
+  </button>
+</header>
+
+<div class="layout">
+  <nav class="side">
+    <h3>Содержание</h3>
+    <a href="#about">0. О чём эта методичка</a>
+    <a href="#terms">1. Простые термины</a>
+    <a href="#theory">2. Теория: 3НФ и ключи</a>
+    <a href="#domain">3. Предметная область «Чудо Обувь»</a>
+    <a href="#scheme">4. Схема базы данных</a>
+    <a href="#start">5. Запуск SSMS и подключение</a>
+    <a href="#db">6. Создание базы данных</a>
+    <a href="#tables">7. Создание таблиц мышкой</a>
+    <a href="#excel">8. Заполнение данными: Excel → база</a>
+    <a href="#er">9. ER-диаграмма в PDF</a>
+    <a href="#script">10. Генерация скрипта</a>
+    <a href="#repo">11. Сдача в репозиторий</a>
+    <a href="#checklist">12. Чек-лист перед сдачей</a>
+    <a href="#errors">13. Типичные ошибки</a>
+    </nav>
+
+  <main>
+
+    <section id="about">
+      <h2>0. О чём эта методичка</h2>
+      <p>Это <b>разбор примерного задания ДЭ 2027 года</b> — пошаговое руководство для тех, кто впервые открывает SQL Server. Здесь не нужно писать SQL-запросы руками — <b>все действия выполняются мышкой</b> через окна SSMS. Скрипт базы данных сгенерирует сама программа в конце работы.</p>
+      <div class="block action">
+        <b>Обозначения:</b> синяя плашка — что нажать, зелёная — что вписать, жёлтая — на что обратить внимание, красная — типичная ошибка.
+      </div>
+      <h3>0.1. План работы на 50 минут</h3>
+      <table>
+        <tr><th>Этап</th><th>Время</th></tr>
+        <tr><td>Анализ предметной области</td><td>5 мин</td></tr>
+        <tr><td>Проектирование схемы на бумаге</td><td>5 мин</td></tr>
+        <tr><td>Создание таблиц в SSMS</td><td>15 мин</td></tr>
+        <tr><td>Заполнение справочников</td><td>5 мин</td></tr>
+        <tr><td>Импорт данных</td><td>12 мин</td></tr>
+        <tr><td>ER-диаграмма</td><td>5 мин</td></tr>
+        <tr><td>Генерация скрипта</td><td>3 мин</td></tr>
+      </table>
+    </section>
+
+    <section id="terms">
+      <h2>1. Простые термины</h2>
+      <table>
+        <tr><th>Слово</th><th>Что означает простыми словами</th></tr>
+        <tr><td><b>База данных (БД)</b></td><td>Электронный «шкаф» с папками, где хранятся данные.</td></tr>
+        <tr><td><b>СУБД</b></td><td>Программа, которая этим «шкафом» управляет. У нас — Microsoft SQL Server.</td></tr>
+        <tr><td><b>SSMS</b></td><td>Окно, через которое мы работаем с SQL Server.</td></tr>
+        <tr><td><b>Таблица</b></td><td>Лист Excel: столбцы — поля, строки — записи.</td></tr>
+        <tr><td><b>Поле (столбец)</b></td><td>Одна характеристика: «Цена», «Наименование».</td></tr>
+        <tr><td><b>Запись (строка)</b></td><td>Один конкретный объект: товар «Кроссовки».</td></tr>
+        <tr><td><b>Первичный ключ (PK)</b></td><td>Уникальный номер записи. Как номер паспорта.</td></tr>
+        <tr><td><b>Внешний ключ (FK)</b></td><td>Ссылка на запись в другой таблице.</td></tr>
+        <tr><td><b>IDENTITY</b></td><td>Автогенерация чисел 1, 2, 3…</td></tr>
+        <tr><td><b>Связь 1:M</b></td><td>Один-ко-многим: у одной категории много товаров.</td></tr>
+        <tr><td><b>Ссылочная целостность</b></td><td>Нельзя поставить ссылку на то, чего нет.</td></tr>
+        <tr><td><b>3НФ</b></td><td>Третья нормальная форма — правило, по которому убираем повторения.</td></tr>
+      </table>
+    </section>
+
+    <section id="theory"><h2>2. Теория: 3НФ и ключи</h2><p>База данных должна быть в <b>третьей нормальной форме (3НФ)</b> с <b>ссылочной целостностью</b>.</p><table><tr><th>Понятие</th><th>Простыми словами</th><th>Пример у нас</th></tr><tr><td>Первичный ключ (PK)</td><td>Уникальный номер строки</td><td><code>Код_товара</code> в Товары</td></tr><tr><td>Внешний ключ (FK)</td><td>Ссылка на строку другой таблицы</td><td><code>Товары.Код_категории</code> → Категории</td></tr><tr><td>Ссылочная целостность</td><td>База не даст сослаться на несуществующую строку</td><td>нельзя создать товар с несуществующей категорией</td></tr><tr><td>1НФ</td><td>Одно значение в одной ячейке, нет повторяющихся столбцов</td><td>размеры — не столбцы «36, 37, 38…», а строки в Товарные_позиции</td></tr><tr><td>2НФ</td><td>Поле зависит от всего ключа, а не его части</td><td>в Товарные_позиции остаток зависит от пары «товар + размер»</td></tr><tr><td>3НФ</td><td>Неключевое поле зависит только от ключа, а не от другого неключевого</td><td>название категории не повторяется в товаре — в Товары хранится ссылка <code>Код_категории</code></td></tr></table><div class="block tip">Итоговая сумма заказа в БД <b>не хранится</b>: она считается из позиций (<code>Количество × Цена_за_единицу</code>). Иначе данные можно было бы рассогласовать.</div></section>
+
+    <section id="domain"><h2>3. Предметная область «Чудо Обувь»</h2><p>Компания «Чудо Обувь» продаёт обувь; клиенты выбирают и заказывают одну или несколько пар из каталога. Что нужно хранить (Приложение 1):</p><table><tr><th>Из описания</th><th>Где хранится</th></tr><tr><td>Пользователь: логин, фамилия, имя, отчество, роль</td><td>Пользователи, Роли</td></tr><tr><td>Товар: категория, подкатегория, производство, наименование, изображение, состав, описание, цена</td><td>Категории, Товары</td></tr><tr><td>Размерный ряд и доступные размеры</td><td>Размеры, Товарные_позиции</td></tr><tr><td>Товарная позиция = модель + размер, с остатком</td><td>Товарные_позиции</td></tr><tr><td>Заказ: дата, клиент</td><td>Заказы</td></tr><tr><td>Состав заказа: позиция, количество, цена за единицу</td><td>Строки_заказов</td></tr></table><ul><li>Роли: администратор, менеджер, авторизованный пользователь. «Неавторизованный пользователь» — это отсутствие входа, в БД его нет.</li><li>Изображение — в БД хранится <b>имя файла</b>, сами картинки лежат в папке.</li><li>Расчёты — в рублях.</li></ul></section>
+
+    <section id="scheme"><h2>4. Схема базы данных</h2><p>Восемь таблиц. Ключ 🔑, внешний ключ ↗, линия — связь «один ко многим». <b>Схему можно двигать и масштабировать</b> — подробности под рисунком.</p><div style="position:relative;border:1px solid var(--border);border-radius:8px;background:#fff;overflow:hidden">
+<div style="position:absolute;top:8px;right:8px;z-index:2;display:flex;gap:4px">
+<button type="button" id="erIn" style="padding:4px 10px;cursor:pointer">＋</button><button type="button" id="erOut" style="padding:4px 10px;cursor:pointer">－</button><button type="button" id="erFit" style="padding:4px 10px;cursor:pointer">Весь экран</button></div>
+<svg id="ersvg" width="100%" height="540" style="display:block;cursor:grab;touch-action:none;user-select:none"><g id="ervp"></g></svg>
+<div style="padding:6px 10px;font-size:12px;color:#555;background:#f4f4f4">Колесо мыши или кнопки — масштаб · перетаскивание фона — сдвиг · перетаскивание таблицы — перемещение (связи следуют за таблицей)</div></div>
+<script>
+(function(){
+var D={"T": [{"n": "Роли", "x": 10, "y": 10, "c": [{"n": "Код_роли", "k": "pk"}, {"n": "Название_роли", "k": ""}]}, {"n": "Категории", "x": 10, "y": 260, "c": [{"n": "Код_категории", "k": "pk"}, {"n": "Название_категории", "k": ""}]}, {"n": "Размеры", "x": 730, "y": 260, "c": [{"n": "Код_размера", "k": "pk"}, {"n": "Размер", "k": ""}]}, {"n": "Пользователи", "x": 250, "y": 10, "c": [{"n": "Код_пользователя", "k": "pk"}, {"n": "Фамилия", "k": ""}, {"n": "Имя", "k": ""}, {"n": "Отчество", "k": ""}, {"n": "Логин", "k": ""}, {"n": "Код_роли", "k": "fk"}]}, {"n": "Товары", "x": 250, "y": 260, "c": [{"n": "Код_товара", "k": "pk"}, {"n": "Код_категории", "k": "fk"}, {"n": "Подкатегория", "k": ""}, {"n": "Наименование", "k": ""}, {"n": "Производство", "k": ""}, {"n": "Описание", "k": ""}, {"n": "Состав", "k": ""}, {"n": "Изображение", "k": ""}, {"n": "Цена", "k": ""}]}, {"n": "Товарные_позиции", "x": 490, "y": 260, "c": [{"n": "Код_позиции", "k": "pk"}, {"n": "Код_товара", "k": "fk"}, {"n": "Код_размера", "k": "fk"}, {"n": "Количество", "k": ""}]}, {"n": "Заказы", "x": 490, "y": 10, "c": [{"n": "Код_заказа", "k": "pk"}, {"n": "Дата_заказа", "k": ""}, {"n": "Код_пользователя", "k": "fk"}]}, {"n": "Строки_заказов", "x": 730, "y": 10, "c": [{"n": "Код_строки", "k": "pk"}, {"n": "Код_заказа", "k": "fk"}, {"n": "Код_позиции", "k": "fk"}, {"n": "Количество", "k": ""}, {"n": "Цена_за_единицу", "k": ""}]}], "R": [["Пользователи", "Роли"], ["Товары", "Категории"], ["Товарные_позиции", "Товары"], ["Товарные_позиции", "Размеры"], ["Заказы", "Пользователи"], ["Строки_заказов", "Заказы"], ["Строки_заказов", "Товарные_позиции"]]},NS='http://www.w3.org/2000/svg',svg=document.getElementById('ersvg'),vp=document.getElementById('ervp');
+var sc=1,tx=10,ty=10,BW=215,B={},L=[];
+function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function view(){vp.setAttribute('transform','translate('+tx+','+ty+') scale('+sc+')');}
+D.R.forEach(function(r){L.push({c:r[0],p:r[1],e:el('line',{stroke:'#70B2AF','stroke-width':2.2},vp)});});
+D.T.forEach(function(t){
+ var h=30+17*t.c.length+8,g=el('g',{style:'cursor:move'},vp);
+ el('rect',{width:BW,height:h,rx:6,fill:'#fff',stroke:'#70B2AF','stroke-width':2},g);
+ el('rect',{width:BW,height:26,rx:6,fill:'#70B2AF'},g);
+ var tt=el('text',{x:BW/2,y:18,fill:'#fff','font-weight':'bold','text-anchor':'middle','font-size':14,'font-family':'Calibri,sans-serif'},g);tt.textContent=t.n;
+ t.c.forEach(function(c,i){var x=el('text',{x:8,y:46+17*i,fill:'#222','font-size':13,'font-family':'Calibri,sans-serif'},g);x.textContent=(c.k=='pk'?'🔑 ':(c.k=='fk'?'↗ ':'')) +c.n;});
+ B[t.n]={x:t.x,y:t.y,w:BW,h:h,g:g};put(B[t.n]);
+ g.addEventListener('pointerdown',function(e){e.stopPropagation();var b=B[t.n],sx=e.clientX,sy=e.clientY,bx=b.x,by=b.y;g.setPointerCapture(e.pointerId);
+  function mv(ev){b.x=bx+(ev.clientX-sx)/sc;b.y=by+(ev.clientY-sy)/sc;put(b);lines();}
+  function up(){g.removeEventListener('pointermove',mv);g.removeEventListener('pointerup',up);}
+  g.addEventListener('pointermove',mv);g.addEventListener('pointerup',up);});
+});
+function put(b){b.g.setAttribute('transform','translate('+b.x+','+b.y+')');}
+function lines(){L.forEach(function(l){var a=B[l.c],b=B[l.p];if(!a||!b)return;l.e.setAttribute('x1',a.x+a.w/2);l.e.setAttribute('y1',a.y+a.h/2);l.e.setAttribute('x2',b.x+b.w/2);l.e.setAttribute('y2',b.y+b.h/2);});}
+function zoom(k,mx,my){var n=Math.max(.25,Math.min(3,sc*k));tx=mx-(mx-tx)*n/sc;ty=my-(my-ty)*n/sc;sc=n;view();}
+function ctr(){var r=svg.getBoundingClientRect();return [r.width/2,r.height/2];}
+svg.addEventListener('wheel',function(e){e.preventDefault();var r=svg.getBoundingClientRect();zoom(e.deltaY<0?1.12:.89,e.clientX-r.left,e.clientY-r.top);},{passive:false});
+svg.addEventListener('pointerdown',function(e){var sx=e.clientX,sy=e.clientY,ox=tx,oy=ty;svg.setPointerCapture(e.pointerId);svg.style.cursor='grabbing';
+ function mv(ev){tx=ox+ev.clientX-sx;ty=oy+ev.clientY-sy;view();}
+ function up(){svg.removeEventListener('pointermove',mv);svg.removeEventListener('pointerup',up);svg.style.cursor='grab';}
+ svg.addEventListener('pointermove',mv);svg.addEventListener('pointerup',up);});
+document.getElementById('erIn').onclick=function(){var c=ctr();zoom(1.25,c[0],c[1]);};
+document.getElementById('erOut').onclick=function(){var c=ctr();zoom(.8,c[0],c[1]);};
+function fit(){var r=svg.getBoundingClientRect();sc=Math.min(1,(r.width-20)/960);tx=10;ty=10;view();}
+document.getElementById('erFit').onclick=fit;
+lines();fit();
+})();
+</script><h3>4.1. Роли</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_роли</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Название_роли</code></td><td>nvarchar(50)</td><td>нет</td><td></td></tr></table><h3>4.2. Категории</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_категории</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Название_категории</code></td><td>nvarchar(100)</td><td>нет</td><td></td></tr></table><h3>4.3. Размеры</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_размера</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Размер</code></td><td>decimal(4,1)</td><td>нет</td><td></td></tr></table><h3>4.4. Пользователи</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_пользователя</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Фамилия</code></td><td>nvarchar(100)</td><td>нет</td><td></td></tr><tr><td><code>Имя</code></td><td>nvarchar(100)</td><td>нет</td><td></td></tr><tr><td><code>Отчество</code></td><td>nvarchar(100)</td><td>да</td><td></td></tr><tr><td><code>Логин</code></td><td>nvarchar(50)</td><td>нет</td><td></td></tr><tr><td><code>Код_роли</code></td><td>int</td><td>нет</td><td>FK → Роли</td></tr></table><h3>4.5. Товары</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_товара</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Код_категории</code></td><td>int</td><td>нет</td><td>FK → Категории</td></tr><tr><td><code>Подкатегория</code></td><td>nvarchar(100)</td><td>да</td><td></td></tr><tr><td><code>Наименование</code></td><td>nvarchar(255)</td><td>нет</td><td></td></tr><tr><td><code>Производство</code></td><td>nvarchar(150)</td><td>нет</td><td></td></tr><tr><td><code>Описание</code></td><td>nvarchar(max)</td><td>да</td><td></td></tr><tr><td><code>Состав</code></td><td>nvarchar(max)</td><td>да</td><td></td></tr><tr><td><code>Изображение</code></td><td>nvarchar(255)</td><td>да</td><td></td></tr><tr><td><code>Цена</code></td><td>decimal(10,2)</td><td>нет</td><td></td></tr></table><h3>4.6. Товарные_позиции</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_позиции</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Код_товара</code></td><td>int</td><td>нет</td><td>FK → Товары</td></tr><tr><td><code>Код_размера</code></td><td>int</td><td>нет</td><td>FK → Размеры</td></tr><tr><td><code>Количество</code></td><td>int</td><td>нет</td><td>DEFAULT 0</td></tr></table><h3>4.7. Заказы</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_заказа</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Дата_заказа</code></td><td>datetime2</td><td>нет</td><td>DEFAULT SYSDATETIME()</td></tr><tr><td><code>Код_пользователя</code></td><td>int</td><td>нет</td><td>FK → Пользователи</td></tr></table><h3>4.8. Строки_заказов</h3><table><tr><th>Поле</th><th>Тип</th><th>NULL</th><th>Ключ / правило</th></tr><tr><td><code>Код_строки</code></td><td>int</td><td>нет</td><td>PK, IDENTITY</td></tr><tr><td><code>Код_заказа</code></td><td>int</td><td>нет</td><td>FK → Заказы</td></tr><tr><td><code>Код_позиции</code></td><td>int</td><td>нет</td><td>FK → Товарные_позиции</td></tr><tr><td><code>Количество</code></td><td>int</td><td>нет</td><td></td></tr><tr><td><code>Цена_за_единицу</code></td><td>decimal(10,2)</td><td>нет</td><td></td></tr></table><h3>4.9. Связи и ссылочная целостность</h3><table><tr><th>Связь</th><th>Если удалить / изменить родителя</th></tr><tr><td>Пользователи.Код_роли → Роли.Код_роли</td><td>удаление: запрещено · изменение ключа: каскадом</td></tr><tr><td>Товары.Код_категории → Категории.Код_категории</td><td>удаление: запрещено · изменение ключа: каскадом</td></tr><tr><td>Товарные_позиции.Код_товара → Товары.Код_товара</td><td>удаление: каскадом · изменение ключа: каскадом</td></tr><tr><td>Товарные_позиции.Код_размера → Размеры.Код_размера</td><td>удаление: запрещено · изменение ключа: каскадом</td></tr><tr><td>Заказы.Код_пользователя → Пользователи.Код_пользователя</td><td>удаление: запрещено · изменение ключа: каскадом</td></tr><tr><td>Строки_заказов.Код_заказа → Заказы.Код_заказа</td><td>удаление: каскадом · изменение ключа: каскадом</td></tr><tr><td>Строки_заказов.Код_позиции → Товарные_позиции.Код_позиции</td><td>удаление: запрещено · изменение ключа: каскадом</td></tr></table><div class="block tip">Заказ удаляется вместе со своими позициями (<b>CASCADE</b>), а пользователя с заказами или товарную позицию, на которую есть заказы, удалить нельзя (<b>NO ACTION</b>) — так сохраняется история.</div><h3>4.10. Почему подкатегория и производство — поля товара</h3><p>У них в задании нет собственных атрибутов (адреса, кода), поэтому отдельные таблицы не нужны: это не нарушает 3НФ. Если бы требовалось хранить, например, город производителя, его вынесли бы в таблицу.</p></section>
+
+    <section id="start">
+      <h2>5. Запуск SSMS и подключение</h2>
+      <div class="step"><span class="num">1</span><h4>Запуск</h4>
+        <div class="block action">Пуск → поиск <code>SSMS</code> → <b>Microsoft SQL Server Management Studio</b>.</div>
+      </div>
+      <div class="step"><span class="num">2</span><h4>Подключение</h4>
+        <ul>
+          <li><b>Server type:</b> Database Engine</li>
+          <li><b>Server name:</b> <code>localhost</code> или <code>.\SQLEXPRESS</code></li>
+          <li><b>Authentication:</b> Windows Authentication</li>
+        </ul>
+        <div class="block action">Нажмите <b>Connect</b>.</div>
+      </div>
+      <div class="step"><span class="num">3</span><h4>Object Explorer</h4>
+        <p>Слева появится дерево <b>Object Explorer</b> с папкой <b>Databases</b>.</p>
+      </div>
+    </section>
+
+    <section id="db">
+      <h2>6. Создание базы данных</h2>
+      <div class="block action">Правой кнопкой на <b>Databases</b> → <b>New Database…</b></div>
+      <div class="block field">Имя: <code>Чудо_Обувь</code></div>
+      <div class="block action">Остальное не трогаем → <b>OK</b>.</div>
+      <div class="block ok">Разверните <b>Databases</b>. Если не видно — правой кнопкой <b>Refresh</b>.</div>
+    </section>
+
+    <section id="tables"><h2>7. Создание таблиц мышкой</h2><p>Таблицы создаём мышкой в конструкторе таблиц SSMS. Порядок важен: сначала справочники, потом таблицы со ссылками.</p><ol><li><code>Роли</code></li><li><code>Категории</code></li><li><code>Размеры</code></li><li><code>Пользователи</code></li><li><code>Товары</code></li><li><code>Товарные_позиции</code></li><li><code>Заказы</code></li><li><code>Строки_заказов</code></li></ol><div class="step"><span class="num">1</span><h4>Новая таблица</h4><div class="block action">Object Explorer → база <b>Чудо_Обувь</b> → правой кнопкой по <b>Tables</b> → <b>New → Table…</b>.</div></div><div class="step"><span class="num">2</span><h4>Столбцы</h4><div class="block action">В сетке заполните <b>Column Name</b>, <b>Data Type</b> (вводите вручную, например <code>nvarchar(100)</code>) и галочку <b>Allow Nulls</b> — по таблицам ниже.</div></div><div class="step"><span class="num">3</span><h4>Первичный ключ</h4><div class="block action">Правой кнопкой по серому квадрату слева от строки с ключом → <b>Set Primary Key</b> (появится ключик).</div></div><div class="step"><span class="num">4</span><h4>IDENTITY (номер сам растёт)</h4><div class="block action">Выделите строку ключа → внизу окно <b>Column Properties</b> → раскройте <b>Identity Specification</b> → <b>(Is Identity)</b> = <b>Yes</b>.</div></div><div class="step"><span class="num">5</span><h4>Значение по умолчанию</h4><div class="block action">Выделите столбец → <b>Column Properties → Default Value or Binding</b> → впишите <code>0</code> или <code>SYSDATETIME()</code>.</div></div><div class="step"><span class="num">6</span><h4>Сохранить</h4><div class="block action"><b>Ctrl+S</b> → введите имя таблицы → OK.</div></div><div class="step"><span class="num">7</span><h4>Ограничения</h4><div class="block action"><b>UNIQUE:</b> правой кнопкой по пустому месту конструктора → <b>Indexes/Keys…</b> → <b>Add</b> → <b>Columns</b> → <b>…</b> → выберите столбец(ы) → <b>Is Unique</b> = Yes.<br><b>CHECK:</b> правой кнопкой → <b>Check Constraints…</b> → <b>Add</b> → в <b>Expression</b> впишите условие.<br><b>Внешний ключ:</b> правой кнопкой → <b>Relationships…</b> → <b>Add</b> → <b>Tables And Columns Specification</b> → <b>…</b> → слева родительская таблица и её ключ, справа ваш столбец → в <b>INSERT And UPDATE Specification</b> задайте <b>Update Rule</b> и <b>Delete Rule</b>. Сохраните (Ctrl+S).</div></div><div class="block warn">Внешний ключ можно создать, только когда родительская таблица уже сохранена — поэтому порядок именно такой.</div><div class="block tip">Быстрый способ — выполнить готовый скрипт <code>Database.sql</code> из архива программы (<b>New Query → вставить → Execute</b>). Но на экзамене требуется показать разработку, поэтому тренируйтесь мышкой.</div><h3>7.1. Роли</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_роли</code></td><td>int</td><td>☐</td></tr><tr><td><code>Название_роли</code></td><td>nvarchar(50)</td><td>☐</td></tr></table><ul><li>PK: <code>Код_роли</code> (IDENTITY)</li><li>UNIQUE: <code>Название_роли</code></li></ul><h3>7.2. Категории</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_категории</code></td><td>int</td><td>☐</td></tr><tr><td><code>Название_категории</code></td><td>nvarchar(100)</td><td>☐</td></tr></table><ul><li>PK: <code>Код_категории</code> (IDENTITY)</li><li>UNIQUE: <code>Название_категории</code></li></ul><h3>7.3. Размеры</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_размера</code></td><td>int</td><td>☐</td></tr><tr><td><code>Размер</code></td><td>decimal(4,1)</td><td>☐</td></tr></table><ul><li>PK: <code>Код_размера</code> (IDENTITY)</li><li>UNIQUE: <code>Размер</code></li></ul><h3>7.4. Пользователи</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_пользователя</code></td><td>int</td><td>☐</td></tr><tr><td><code>Фамилия</code></td><td>nvarchar(100)</td><td>☐</td></tr><tr><td><code>Имя</code></td><td>nvarchar(100)</td><td>☐</td></tr><tr><td><code>Отчество</code></td><td>nvarchar(100)</td><td>☑</td></tr><tr><td><code>Логин</code></td><td>nvarchar(50)</td><td>☐</td></tr><tr><td><code>Код_роли</code></td><td>int</td><td>☐</td></tr></table><ul><li>PK: <code>Код_пользователя</code> (IDENTITY)</li><li>UNIQUE: <code>Логин</code></li><li>FK: <code>Код_роли</code> → Роли(Код_роли), Update Rule = Cascade, Delete Rule = No Action</li></ul><h3>7.5. Товары</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_товара</code></td><td>int</td><td>☐</td></tr><tr><td><code>Код_категории</code></td><td>int</td><td>☐</td></tr><tr><td><code>Подкатегория</code></td><td>nvarchar(100)</td><td>☑</td></tr><tr><td><code>Наименование</code></td><td>nvarchar(255)</td><td>☐</td></tr><tr><td><code>Производство</code></td><td>nvarchar(150)</td><td>☐</td></tr><tr><td><code>Описание</code></td><td>nvarchar(max)</td><td>☑</td></tr><tr><td><code>Состав</code></td><td>nvarchar(max)</td><td>☑</td></tr><tr><td><code>Изображение</code></td><td>nvarchar(255)</td><td>☑</td></tr><tr><td><code>Цена</code></td><td>decimal(10,2)</td><td>☐</td></tr></table><ul><li>PK: <code>Код_товара</code> (IDENTITY)</li><li>CHECK: <code>Цена >= 0</code></li><li>FK: <code>Код_категории</code> → Категории(Код_категории), Update Rule = Cascade, Delete Rule = No Action</li></ul><h3>7.6. Товарные_позиции</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_позиции</code></td><td>int</td><td>☐</td></tr><tr><td><code>Код_товара</code></td><td>int</td><td>☐</td></tr><tr><td><code>Код_размера</code></td><td>int</td><td>☐</td></tr><tr><td><code>Количество</code></td><td>int</td><td>☐</td></tr></table><ul><li>PK: <code>Код_позиции</code> (IDENTITY)</li><li>UNIQUE: <code>Код_товара, Код_размера</code></li><li>CHECK: <code>Количество >= 0</code></li><li>FK: <code>Код_товара</code> → Товары(Код_товара), Update Rule = Cascade, Delete Rule = Cascade</li><li>FK: <code>Код_размера</code> → Размеры(Код_размера), Update Rule = Cascade, Delete Rule = No Action</li></ul><h3>7.7. Заказы</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_заказа</code></td><td>int</td><td>☐</td></tr><tr><td><code>Дата_заказа</code></td><td>datetime2</td><td>☐</td></tr><tr><td><code>Код_пользователя</code></td><td>int</td><td>☐</td></tr></table><ul><li>PK: <code>Код_заказа</code> (IDENTITY)</li><li>FK: <code>Код_пользователя</code> → Пользователи(Код_пользователя), Update Rule = Cascade, Delete Rule = No Action</li></ul><h3>7.8. Строки_заказов</h3><table><tr><th>Column Name</th><th>Data Type</th><th>Allow Nulls</th></tr><tr><td><code>Код_строки</code></td><td>int</td><td>☐</td></tr><tr><td><code>Код_заказа</code></td><td>int</td><td>☐</td></tr><tr><td><code>Код_позиции</code></td><td>int</td><td>☐</td></tr><tr><td><code>Количество</code></td><td>int</td><td>☐</td></tr><tr><td><code>Цена_за_единицу</code></td><td>decimal(10,2)</td><td>☐</td></tr></table><ul><li>PK: <code>Код_строки</code> (IDENTITY)</li><li>CHECK: <code>Количество > 0</code></li><li>CHECK: <code>Цена_за_единицу >= 0</code></li><li>FK: <code>Код_заказа</code> → Заказы(Код_заказа), Update Rule = Cascade, Delete Rule = Cascade</li><li>FK: <code>Код_позиции</code> → Товарные_позиции(Код_позиции), Update Rule = Cascade, Delete Rule = No Action</li></ul></section>
+
+    <section id="excel"><h2>8. Заполнение данными: Excel → база</h2><div class="block tip">Загружаем данные в схему из раздела «Схема базы данных» (8 таблиц). Таблицы должны быть уже созданы.</div><h3>8.1. Файлы Excel</h3><p>Из материалов экзамена — пять файлов. Ниже — оригиналы и версии, уже приведённые к виду для импорта (я проверил, что в них все связи сходятся).</p><table><tr><th>Что внутри</th><th>Строк</th><th>Оригинал</th><th>Готово к импорту</th><th>Куда попадёт</th></tr><tr><td>Товары: категория, подкатегория, картинка, название, производство, описание, состав, цена</td><td>31</td><td><a href="../downloads/excel/original/Products_import.xlsx" download>xlsx</a></td><td><a href="../downloads/excel/ready/Products.xlsx" download>xlsx</a> · <a href="../downloads/excel/ready/Products.csv" download>csv</a></td><td>Категории, Товары</td></tr><tr><td>Размеры</td><td>35</td><td><a href="../downloads/excel/original/Sizes_import.xlsx" download>xlsx</a></td><td><a href="../downloads/excel/ready/Sizes.xlsx" download>xlsx</a> · <a href="../downloads/excel/ready/Sizes.csv" download>csv</a></td><td>Размеры</td></tr><tr><td>Остатки: товар + размер + количество</td><td>92</td><td><a href="../downloads/excel/original/Stock_Items_import.xlsx" download>xlsx</a></td><td><a href="../downloads/excel/ready/StockItems.xlsx" download>xlsx</a> · <a href="../downloads/excel/ready/StockItems.csv" download>csv</a></td><td>Товарные_позиции</td></tr><tr><td>Пользователи и роли</td><td>20</td><td><a href="../downloads/excel/original/Users_import.xlsx" download>xlsx</a></td><td><a href="../downloads/excel/ready/Users.xlsx" download>xlsx</a> · <a href="../downloads/excel/ready/Users.csv" download>csv</a></td><td>Пользователи (Роли — вручную)</td></tr><tr><td>Заказы: 10 заказов, по строке на позицию</td><td>30</td><td><a href="../downloads/excel/original/Orders_import.xlsx" download>xlsx</a></td><td><a href="../downloads/excel/ready/Orders.xlsx" download>xlsx</a> · <a href="../downloads/excel/ready/Orders.csv" download>csv</a></td><td>Заказы, Строки_заказов</td></tr></table><h3>8.2. Что не так в оригинальных файлах</h3><p>Если импортировать «как есть», часть данных молча потеряется. Вот что я нашёл:</p><table><tr><th>Проблема</th><th>Где</th><th>Чем грозит</th><th>Исправление</th></tr><tr><td>Неразрывный пробел вместо обычного</td><td>Products, ячейка <b>D18</b> («…кожа с металлическими вставками»)</td><td>В остатках и заказах название с обычным пробелом — совпадения нет, остатки этого товара не найдутся</td><td>Заменить на обычный пробел</td></tr><tr><td>Пробел в конце ячейки</td><td>Products: <b>D25</b> («Азимут Бег »), <b>F11, F12, F27, F32</b> (описание)</td><td>Название «Азимут Бег » ≠ «Азимут Бег» → товар без остатков и заказов</td><td>Удалить пробелы по краям</td></tr><tr><td>Названия не совпадают</td><td>Products <b>D27</b>: «Черные туфли в классическом стиле — база для деловых образов»; в остатках и заказах: «Черные туфли в классическом стиле»</td><td>Связать остатки и заказы с товаром нельзя</td><td>Привести к одному написанию (в готовых файлах — короткое)</td></tr><tr><td>Размеры — то текст, то число</td><td>Sizes и Stock: 36.5, 37.5, 38.5, 39.5, 40.5, 41.5, 42.5 записаны текстом, остальные — числом</td><td>В русской Excel при ручной правке «36.5» превращается в «36,5» или в дату; в CSV получится смесь</td><td>Привести к числу, в CSV — с точкой</td></tr><tr><td>ФИО одной строкой</td><td>Orders</td><td>В базе заказ хранит <code>UserId</code>, а не ФИО</td><td>Найти пользователя по «Фамилия Имя Отчество» при переносе</td></tr><tr><td>Заказ занимает несколько строк</td><td>Orders: 30 строк = 10 заказов</td><td>Если вставлять строки как заказы, получится 30 заказов</td><td>Заказы — <code>SELECT DISTINCT</code>, позиции — отдельно</td></tr><tr><td>Опечатка в заголовке</td><td>Users: «Отчетсво»</td><td>Путаница при сопоставлении столбцов</td><td>Заголовки приведены к виду без пробелов</td></tr><tr><td>Роль «Авторизованный пользователь»</td><td>Users</td><td>Если в <code>Роли</code> другое название — роли не найдутся</td><td>Названия в <code>Роли</code> должны совпасть дословно</td></tr></table><h3>8.3. Привести Excel к виду для импорта (мышкой)</h3><p>В «Готово к импорту» это уже сделано. Чтобы уметь повторить:</p><div class="step"><span class="num">1</span><h4>Неразрывные пробелы</h4><div class="block action">Откройте <code>Products_import.xlsx</code> → <b>Ctrl+H</b> (Найти и заменить). В поле <b>«Найти»</b> зажмите <b>Alt</b> и на цифровой клавиатуре наберите <code>0160</code> (отпустите Alt) — в поле появится невидимый символ. В <b>«Заменить на»</b> поставьте один обычный пробел → <b>Заменить все</b>.</div></div><div class="step"><span class="num">2</span><h4>Пробелы по краям</h4><div class="block action">Справа от таблицы в пустой ячейке введите <code>=СЖПРОБЕЛЫ(D2)</code> → протяните вниз (потяните за квадрат в углу ячейки). Выделите результат → <b>Ctrl+C</b> → выделите исходный столбец → правой кнопкой → <b>Специальная вставка → Значения</b>. Удалите вспомогательный столбец. То же — для столбцов «Описание» и «Производство».</div><div class="block tip">Быстрая проверка длины: <code>=ДЛСТР(D2)=ДЛСТР(СЖПРОБЕЛЫ(D2))</code> — если в столбце есть <code>ЛОЖЬ</code>, значит пробелы остались.</div></div><div class="step"><span class="num">3</span><h4>Одинаковые названия</h4><div class="block action">Скопируйте название товара из <code>Stock_Items_import.xlsx</code> (<b>Ctrl+C</b> на ячейке) и вставьте в <code>D27</code> файла Products (<b>F2</b> → <b>Ctrl+A</b> → <b>Ctrl+V</b>).</div></div><div class="step"><span class="num">4</span><h4>Размеры</h4><div class="block action">Выделите столбец размеров → правой кнопкой → <b>Формат ячеек → Числовой</b>, 1 знак после запятой. Текстовые «36.5» Excel может показать с зелёным уголком: нажмите <b>!</b> → <b>Преобразовать в число</b>.</div></div><div class="step"><span class="num">5</span><h4>Заголовки и сохранение</h4><div class="block action">Переименуйте заголовки: без пробелов, вместо пробела — подчёркивание (см. готовые файлы: <code>Наименование, Производство, Размер …</code>). Затем <b>Файл → Сохранить как → CSV UTF-8 (разделитель — запятые)</b>, по одному файлу на лист.</div><div class="block warn">Только <b>UTF-8</b>: иначе русские буквы превратятся в «?». В русской Excel «CSV UTF-8» может использовать разделитель <b>;</b> — файлы из этого раздела уже с запятой.</div></div><h3>8.4. Промежуточные таблицы для импорта</h3><p>В боевые таблицы данные сразу не кладём. Сначала копируем Excel «как есть» во временные таблицы <code>Импорт_…</code> и только потом переносим запросом. Так видно, что именно загрузилось.</p><div class="block action">Таблицы сначала должны быть созданы (раздел «Создание таблиц мышкой» или скрипт <code>Database.sql</code> из архива). Если загружаете способом <b>A</b> — мастер создаст временные таблицы сам, ничего выполнять не нужно. Для способов <b>B</b> и <b>C</b> выполните в <b>New Query</b>:</div><pre><code>CREATE TABLE Импорт_Товары (Категория NVARCHAR(100), Подкатегория NVARCHAR(100), Изображение NVARCHAR(255),
+                            Наименование NVARCHAR(255), Производство NVARCHAR(150), Описание NVARCHAR(MAX),
+                            Состав NVARCHAR(MAX), Цена DECIMAL(10,2));
+CREATE TABLE Импорт_Размеры (Размер NVARCHAR(10));
+CREATE TABLE Импорт_Остатки (Наименование NVARCHAR(255), Производство NVARCHAR(150), Размер NVARCHAR(10), Количество INT);
+CREATE TABLE Импорт_Пользователи (Фамилия NVARCHAR(100), Имя NVARCHAR(100), Отчество NVARCHAR(100),
+                                  Логин NVARCHAR(50), Роль NVARCHAR(50));
+CREATE TABLE Импорт_Заказы (Номер_заказа INT, Дата_заказа DATE, ФИО NVARCHAR(300), Категория NVARCHAR(100),
+                            Наименование NVARCHAR(255), Производство NVARCHAR(150), Размер NVARCHAR(10),
+                            Количество INT, Цена_за_единицу DECIMAL(10,2));</code></pre><table><tr><th>Файл CSV</th><th>Временная таблица</th></tr><tr><td>Products.csv</td><td>Импорт_Товары</td></tr><tr><td>Sizes.csv</td><td>Импорт_Размеры</td></tr><tr><td>StockItems.csv</td><td>Импорт_Остатки</td></tr><tr><td>Users.csv</td><td>Импорт_Пользователи</td></tr><tr><td>Orders.csv</td><td>Импорт_Заказы</td></tr></table><h3>8.5. Загрузка CSV — три способа</h3><div class="step"><span class="num">A</span><h4>Мастер Import Flat File</h4><div class="block action">В SSMS: правой кнопкой по базе → <b>Tasks → Import Flat File…</b> → <b>Next</b> → <b>Browse</b> (тип файлов <b>All files</b>) → <code>Products.csv</code> → в <b>New table name</b> впишите <code>Импорт_Товары</code> → <b>Next</b> → проверьте превью → <b>Next</b> → <b>Modify Columns</b>: тип <b>nvarchar</b> (не varchar!), у <code>Цена</code> — <code>decimal(10,2)</code>, галочки <b>Primary Key</b> снимите → <b>Next → Finish</b>. Так же загрузите остальные четыре файла по таблице выше.</div><div class="block warn">Если русские буквы стали «?» — выбран varchar. Удалите таблицу и загрузите заново с nvarchar.</div></div><div class="step"><span class="num">B</span><h4>Копирование ячеек мышкой (для небольших: Размеры, Пользователи)</h4><div class="block action">Откройте нужный xlsx, выделите ячейки <b>без заголовка</b> → <b>Ctrl+C</b>. В SSMS: правой по <code>Импорт_Размеры</code> → <b>Edit Top 200 Rows</b> → щёлкните по звёздочке (<b>*</b>) в нижней пустой строке → <b>Ctrl+V</b>.</div></div><div class="step"><span class="num">C</span><h4>Формула, которая пишет INSERT за вас (надёжнее всего)</h4><div class="block action">В пустой ячейке справа от данных введите формулу, протяните вниз, скопируйте весь столбец, вставьте в <b>New Query</b> → <b>Execute</b>. Для размеров:</div><pre><code>="INSERT INTO Импорт_Размеры VALUES ('"&amp;A2&amp;"');"</code></pre><div class="block tip">Для остатков: <code>="INSERT INTO Импорт_Остатки VALUES (N'"&amp;A2&amp;"', N'"&amp;B2&amp;"', '"&amp;C2&amp;"', "&amp;D2&amp;");"</code>. Русский текст — с буквой <b>N</b> перед кавычкой.</div></div><h3>8.6. Перенос в боевые таблицы (порядок важен)</h3><p>Родительские таблицы заполняем раньше дочерних. Выполняйте блоки по очереди (<b>Execute</b>, F5):</p><div class="step"><span class="num">1</span><h4>Роли</h4><pre><code>INSERT INTO Роли (Название_роли) VALUES (N'Администратор'), (N'Менеджер'), (N'Авторизованный пользователь');</code></pre></div><div class="step"><span class="num">2</span><h4>Категории и размеры</h4><pre><code>INSERT INTO Категории (Название_категории) SELECT DISTINCT Категория FROM Импорт_Товары;
+INSERT INTO Размеры (Размер) SELECT CAST(Размер AS DECIMAL(4,1)) FROM Импорт_Размеры;</code></pre></div><div class="step"><span class="num">3</span><h4>Товары</h4><pre><code>INSERT INTO Товары (Код_категории, Подкатегория, Наименование, Производство, Описание, Состав, Изображение, Цена)
+SELECT к.Код_категории, и.Подкатегория, и.Наименование, и.Производство, и.Описание, и.Состав, и.Изображение, и.Цена
+FROM Импорт_Товары и JOIN Категории к ON к.Название_категории = и.Категория;</code></pre></div><div class="step"><span class="num">4</span><h4>Товарные позиции (модель + размер → одна строка)</h4><pre><code>INSERT INTO Товарные_позиции (Код_товара, Код_размера, Количество)
+SELECT т.Код_товара, р.Код_размера, и.Количество
+FROM Импорт_Остатки и
+JOIN Товары т ON т.Наименование = и.Наименование AND т.Производство = и.Производство
+JOIN Размеры р ON р.Размер = CAST(и.Размер AS DECIMAL(4,1));</code></pre></div><div class="step"><span class="num">5</span><h4>Пользователи</h4><pre><code>INSERT INTO Пользователи (Фамилия, Имя, Отчество, Логин, Код_роли)
+SELECT и.Фамилия, и.Имя, и.Отчество, и.Логин, р.Код_роли
+FROM Импорт_Пользователи и JOIN Роли р ON р.Название_роли = и.Роль;</code></pre></div><div class="step"><span class="num">6</span><h4>Заказы (с теми же номерами, что в Excel)</h4><pre><code>SET IDENTITY_INSERT Заказы ON;
+INSERT INTO Заказы (Код_заказа, Дата_заказа, Код_пользователя)
+SELECT DISTINCT и.Номер_заказа, и.Дата_заказа, п.Код_пользователя
+FROM Импорт_Заказы и
+JOIN Пользователи п ON п.Фамилия + ' ' + п.Имя + ' ' + п.Отчество = и.ФИО;
+SET IDENTITY_INSERT Заказы OFF;</code></pre><div class="block tip"><code>SET IDENTITY_INSERT</code> временно разрешает вписать номер заказа руками — иначе база пронумеровала бы заказы сама и номера из Excel потерялись бы.</div></div><div class="step"><span class="num">7</span><h4>Строки заказов</h4><pre><code>INSERT INTO Строки_заказов (Код_заказа, Код_позиции, Количество, Цена_за_единицу)
+SELECT и.Номер_заказа, пз.Код_позиции, и.Количество, и.Цена_за_единицу
+FROM Импорт_Заказы и
+JOIN Товары т ON т.Наименование = и.Наименование AND т.Производство = и.Производство
+JOIN Размеры р ON р.Размер = CAST(и.Размер AS DECIMAL(4,1))
+JOIN Товарные_позиции пз ON пз.Код_товара = т.Код_товара AND пз.Код_размера = р.Код_размера;</code></pre></div><h3>8.7. Проверка</h3><table><tr><th>Таблица</th><th>Должно быть строк</th></tr><tr><td>Роли</td><td>3</td></tr><tr><td>Категории</td><td>3</td></tr><tr><td>Размеры</td><td>35</td></tr><tr><td>Товары</td><td>31</td></tr><tr><td>Товарные_позиции</td><td>92</td></tr><tr><td>Пользователи</td><td>20</td></tr><tr><td>Заказы</td><td>10</td></tr><tr><td>Строки_заказов</td><td>30</td></tr></table><pre><code>SELECT 'Товары' AS Таблица, COUNT(*) AS Строк FROM Товары UNION ALL SELECT 'Товарные_позиции', COUNT(*) FROM Товарные_позиции
+UNION ALL SELECT 'Заказы', COUNT(*) FROM Заказы UNION ALL SELECT 'Строки_заказов', COUNT(*) FROM Строки_заказов;</code></pre><div class="block warn"><b>Если строк меньше:</b> JOIN молча отбрасывает несовпавшие строки. Найти потерянные остатки: <code>SELECT и.* FROM Импорт_Остатки и LEFT JOIN Товары т ON т.Наименование = и.Наименование AND т.Производство = и.Производство WHERE т.Код_товара IS NULL;</code> — покажет названия, которые не совпали (пробел по краю или неразрывный пробел).</div><div class="block tip">Все проверки одним нажатием: откройте в SSMS файл <code>Database/Проверка.sql</code> из архива программы и нажмите <b>Execute</b> — он покажет счётчики, товары без остатков, оставшиеся временные таблицы и каталог так, как его строит программа. Всё это стандартный T-SQL для SQL Server.</div><div class="block ok">Когда счётчики сошлись, временные таблицы удалите: <code>DROP TABLE Импорт_Товары, Импорт_Размеры, Импорт_Остатки, Импорт_Пользователи, Импорт_Заказы;</code>. Иначе они попадут в итоговый скрипт. Запустите программу — каталог покажет 31 товар.</div></section>
+
+    <section id="er"><h2>9. ER-диаграмма в PDF</h2><p>Требование КИМ: ER-диаграмма в <b>формате PDF</b>: таблицы, связи, атрибуты, ключи (типы можно не показывать).</p><div class="step"><span class="num">1</span><h4>Создать диаграмму</h4><div class="block action">Object Explorer → базa → правой кнопкой по <b>Database Diagrams</b> → <b>New Database Diagram</b>. При первом запуске SSMS предложит создать служебные объекты — нажмите <b>Yes</b>.</div></div><div class="step"><span class="num">2</span><h4>Добавить таблицы</h4><div class="block action">В окне <b>Add Table</b> выделите все 8 таблиц (Shift+клик) → <b>Add</b> → <b>Close</b>. Связи нарисуются сами — из внешних ключей.</div></div><div class="step"><span class="num">3</span><h4>Расставить</h4><div class="block action">Перетащите таблицы так, чтобы линии связей не пересекались. Ключи отмечены значком ключа.</div></div><div class="step"><span class="num">4</span><h4>Убрать типы данных</h4><div class="block action">Выделите все таблицы (<b>Ctrl+A</b>) → правой кнопкой по заголовку любой таблицы → <b>Table View → Column Names</b>. КИМ типы не требует, достаточно имён полей и ключей.</div></div><div class="step"><span class="num">5</span><h4>Сохранить диаграмму</h4><div class="block action"><b>Ctrl+S</b> → имя <code>ER_Чудо_Обувь</code>.</div></div><div class="step"><span class="num">6</span><h4>Получить PDF</h4><div class="block action">Попробуйте <b>File → Print…</b> → принтер <b>Microsoft Print to PDF</b>. Если диаграмма не помещается или пункта нет: снимок экрана (<b>Win+Shift+S</b>) → вставьте в Word → <b>Файл → Сохранить как → PDF</b>.</div></div><table><tr><th>Что проверить</th><th>☑</th></tr><tr><td>Все 8 таблиц</td><td>☐</td></tr><tr><td>Связи между таблицами</td><td>☐</td></tr><tr><td>Названия полей</td><td>☐</td></tr><tr><td>Первичные ключи отмечены</td><td>☐</td></tr><tr><td>Файл — PDF</td><td>☐</td></tr></table></section>
+
+    <section id="script">
+      <h2>10. Генерация скрипта</h2>
+      <ol>
+        <li>Правой кнопкой на <code>Чудо_Обувь</code> → <b>Tasks</b> → <b>Generate Scripts…</b></li>
+        <li><b>Next</b>.</li>
+        <li><b>Select specific database objects</b> → <b>Tables</b> → <b>Next</b>.</li>
+        <li><b>Advanced</b> → <b>Types of data to script</b> = <b>Schema and data</b> → <b>OK</b>.</li>
+        <li><b>Save to file</b> → путь <code>Чудо_Обувь.sql</code>.</li>
+        <li><b>Next</b> → <b>Next</b> → <b>Finish</b>.</li>
+      </ol>
+      <div class="block ok">В файле должны быть <code>CREATE DATABASE</code>, 8 × <code>CREATE TABLE</code> и много <code>INSERT</code>.</div>
+      <h3>10.1. Проверка</h3>
+      <ol>
+        <li>Создайте <code>Чудо_Обувь_Тест</code>.</li>
+        <li>Откройте <code>Чудо_Обувь.sql</code> в SSMS.</li>
+        <li>Выберите <code>Чудо_Обувь_Тест</code> → <b>F5</b>. Ошибок быть не должно.</li>
+      </ol>
+    </section>
+
+    <section id="repo">
+      <h2>11. Сдача в репозиторий</h2>
+      <pre>Чудо_Обувь/
+├── README.md
+├── sql/
+│   └── Чудо_Обувь.sql
+├── er/
+│   └── ER-диаграмма.pdf
+└── import/
+    ├── Products.csv
+    ├── StockItems.csv
+    └── Orders.csv</pre>
+      <p>Загрузите на GitHub: <b>New repository</b> → <b>Upload files</b> → <b>Commit changes</b>.</p>
+    </section>
+
+    <section id="checklist">
+      <h2>12. Чек-лист перед сдачей</h2>
+      <ul style="list-style:none;padding-left:0">
+        <li>☐ Все 8 таблиц созданы.</li>
+        <li>☐ Имена таблиц и полей на русском, в едином стиле (с заглавной буквы, через подчёркивание).</li>
+        <li>☐ PK стоят.</li>
+        <li>☐ FK настроены.</li>
+        <li>☐ CHECK, UNIQUE, NOT NULL на месте.</li>
+        <li>☐ Схема в 3НФ.</li>
+        <li>☐ Данные: 31 товар, 35 размеров, 92 остатка, 20 пользователей, 10 заказов, 30 позиций; временные таблицы «Импорт_…» удалены.</li>
+        <li>☐ ER-диаграмма в PDF.</li>
+        <li>☐ Скрипт содержит структуру и данные.</li>
+        <li>☐ Скрипт проверен на чистой БД.</li>
+        <li>☐ Всё в репозитории.</li>
+        <li>☐ README.md есть.</li>
+      </ul>
+    </section>
+
+    <section id="errors">
+      <h2>13. Типичные ошибки</h2>
+      <table>
+        <tr><th>Ошибка</th><th>Как исправить</th></tr>
+        <tr><td>Русские буквы → «?»</td><td>Сохраняйте Excel в <b>CSV UTF-8</b>; используйте <code>nvarchar</code>.</td></tr>
+        <tr><td>Дата не импортируется</td><td>В черновике поставьте тип <code>nvarchar(50)</code>.</td></tr>
+        <tr><td>FK не создаётся</td><td>Типы полей должны совпадать; родительская таблица создана раньше.</td></tr>
+        <tr><td>Дубликаты заказов</td><td>В запросе используйте <code>DISTINCT</code>.</td></tr>
+        <tr><td>Не хватает 36.5</td><td>Тип <code>decimal(4,1)</code>, а не <code>int</code>.</td></tr>
+        <tr><td>Скрипт только структура</td><td>В Generate Scripts выберите <b>Schema and data</b>.</td></tr>
+        <tr><td>ER без ключей</td><td>Отметьте PK и FK явно.</td></tr>
+        <tr><td>Смешали стили имён</td><td>Единый стиль: русские имена с заглавной буквы и подчёркиванием (<code>Строки_заказов</code>), как в схеме.</td></tr>
+      <tr><td>Строк меньше, чем в Excel</td><td>JOIN отбросил строки: названия не совпали (пробел на конце, неразрывный пробел). Запрос для поиска — в разделе про Excel.</td></tr>
+        </table>
+    </section>
+
+    
+
+    
+
+    
+
+    
+
+  </main>
+</div>
+
+<a href="#" class="top-link" title="Наверх">↑</a>
+
+<script src="../script.js"></script>
+</body>
+</html>

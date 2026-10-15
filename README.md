@@ -81,9 +81,8 @@ demo-exam2027/
 
 1. В SQL Server Management Studio выполните `Database/Database.sql` (создаётся база `Чудо_Обувь`).
 2. В `App.config` в параметре `Data Source` впишите **имя своего сервера**.
-3. Соберите программу одним из способов:
-   - двойной щелчок по **`Собрать.bat`**, результат в `Bin\ChudoObuvOrders.exe` (Visual Studio не нужна);
-   - либо откройте `ChudoObuvOrders.sln` в Visual Studio → **Release** → **Build Solution**.
+3. Соберите программу:
+   - откройте `ChudoObuvOrders.sln` в Visual Studio → **Release** → **Build Solution**.
 4. Для запуска `.exe` рядом с ним должна лежать папка `Resources`, а имя сервера нужно прописать в `ChudoObuvOrders.exe.config`.
 
 > Проект в Visual Studio должен называться **`ChudoObuvOrders`**: под этим именем мастер подключения сохраняет строку подключения, которую читает `Db.cs`.

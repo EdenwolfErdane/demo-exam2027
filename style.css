@@ -331,6 +331,8 @@ html[data-theme="dark"] .block.danger::before{color:#ff7b89}
 .block.ok{border-color:#28a745;background:var(--ok)}
 .block.ok::before{content:"✅ ПРОВЕРКА: ";font-weight:700;color:#155724}
 html[data-theme="dark"] .block.ok::before{color:#7bd88f}
+.block.tz{border-color:#8a9ba8;background:var(--bg-soft);font-size:.96em}
+html[data-theme="dark"] .block.tz{border-color:#5c6b78}
 .block.tip{border-color:var(--accent-dark);background:var(--block-tip-bg)}
 .block.tip::before{content:"💡 СОВЕТ: ";font-weight:700;color:var(--accent-dark)}
 

@@ -306,6 +306,7 @@ nav.side a.active{background:var(--accent);color:#fff}
 main{padding:32px 44px 80px;min-width:0}
 h2{margin-top:48px;padding-bottom:8px;border-bottom:3px solid var(--accent);font-size:26px;scroll-margin-top:90px;color:var(--text)}
 h3{margin-top:32px;font-size:20px;color:var(--accent-dark);scroll-margin-top:90px}
+section{scroll-margin-top:96px}
 h4{margin-top:22px;font-size:17px}
 p{margin:10px 0}
 ul,ol{margin:10px 0 10px 22px}
@@ -362,6 +363,13 @@ pre{
 .step{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin:18px 0;box-shadow:var(--shadow)}
 .step .num{display:inline-block;background:var(--accent);color:#fff;width:32px;height:32px;border-radius:50%;text-align:center;line-height:32px;font-weight:700;margin-right:10px}
 .step h4{display:inline-block;margin:0;font-size:18px;vertical-align:middle}
+
+/* ============================================================
+   СКРИНШОТЫ
+   ============================================================ */
+figure.shot{margin:12px 0 16px}
+figure.shot img{display:block;max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;padding:4px;box-sizing:border-box}
+figure.shot figcaption{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.45}
 
 /* ============================================================
    DETAILS

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Материалы и задания</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+            max-width: 480px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+
+        .files-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .file-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: all 0.2s ease;
+        }
+
+        .file-link:hover {
+            background-color: #eff6ff;
+            border-color: #93c5fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            font-size: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .file-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #0f172a;
+            transition: color 0.2s ease;
+        }
+
+        .file-link:hover .file-title {
+            color: #1d4ed8;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .download-arrow {
+            color: #94a3b8;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .file-link:hover .download-arrow {
+            color: #2563eb;
+            transform: translateY(2px);
+        }
+
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+            border-radius: 10px;
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .notice-icon {
+            font-size: 18px;
+            line-height: 1.3;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 28px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="card">
+        <header class="header">
+            <span class="badge">КИМ 09.02.07</span>
+            <h1>Материалы и задания</h1>
+        </header>
+        
+        <div class="files-list">
+            <a href="./zadaniya.docx" class="file-link" target="_blank">
+                <div class="file-info">
+                    <div class="icon-box">📄</div>
+                    <div class="file-text">
+                        <span class="file-title">Файл с заданиями</span>
+                        <span class="file-meta">Документ Word (.docx)</span>
+                    </div>
+                </div>
+                <span class="download-arrow">↓</span>
+            </a>
+            
+            <a href="./kim_09_02_07.zip" class="file-link" target="_blank">
+                <div class="file-info">
+                    <div class="icon-box">📦</div>
+                    <div class="file-text">
+                        <span class="file-title">Архив материалов</span>
+                        <span class="file-meta">ZIP-архив (.zip)</span>
+                    </div>
+                </div>
+                <span class="download-arrow">↓</span>
+            </a>
+        </div>
+
+        <div class="notice">
+            <span class="notice-icon">ℹ️</span>
+            <div>
+                <strong>Обратите внимание:</strong> разбор будет опубликован после утверждения вариативной части.
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
